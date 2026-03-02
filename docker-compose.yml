@@ -1,0 +1,228 @@
+networks:
+  mysql:
+    internal: true
+  nginx:
+    internal: false
+  php:
+    internal: true
+  valkey:
+    internal: true
+secrets:
+  db_password:
+    file: './ops/secret'
+  db_root_password:
+    file: './ops/secret'
+services:
+  mysql:
+    cap_drop:
+      - 'ALL'
+    command:
+      - '--log-error-suppression-list="MY-013360"'
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
+      MYSQL_ROOT_PASSWORD_FILE: '/run/secrets/db_root_password'
+      MYSQL_USER: 'db'
+    healthcheck:
+      interval: '10s'
+      retries: 3
+      start_period: '30s'
+      test:
+        - 'CMD'
+        - 'mysqladmin'
+        - 'ping'
+      timeout: '5s'
+    image: 'mysql:8-oracle'
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: 3
+        max-size: '10m'
+    networks:
+      - 'mysql'
+    read_only: true
+    restart: 'unless-stopped'
+    secrets:
+      - 'db_password'
+      - 'db_root_password'
+    security_opt:
+      - 'no-new-privileges:true'
+    stop_grace_period: '60s'
+    sysctls:
+      - 'net.core.somaxconn=65535'
+    ulimits:
+      nofile:
+        hard: 1048576
+        soft: 1048576
+    user: 'mysql:mysql'
+    volumes:
+      - target: '/tmp'
+        tmpfs:
+          mode: 01777
+        type: 'tmpfs'
+      - target: '/run'
+        tmpfs:
+          mode: 01777
+        type: 'tmpfs'
+      - source: 'mysql_data'
+        target: '/var/lib/mysql'
+        type: 'volume'
+  nginx:
+    build:
+      context: './'
+      dockerfile: './Dockerfile'
+      target: 'nginx'
+    cap_drop:
+      - 'ALL'
+    depends_on:
+      php:
+        condition: 'service_healthy'
+    healthcheck:
+      interval: '10s'
+      retries: 3
+      start_period: '30s'
+      test:
+        - 'CMD-SHELL'
+        - 'curl -fsSLhttp://localhost:8080/nginx_ping | grep -q pong || exit 1'
+      timeout: '5s'
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: 3
+        max-size: '10m'
+    networks:
+      - 'nginx'
+      - 'php'
+    ports:
+      - '8080:8080'
+    read_only: true
+    restart: 'unless-stopped'
+    security_opt:
+      - 'no-new-privileges:true'
+    stop_grace_period: '60s'
+    sysctls:
+      - 'net.core.somaxconn=65535'
+      - 'net.ipv4.ip_local_port_range=1024 65535'
+      - 'net.ipv4.tcp_fin_timeout=15'
+      - 'net.ipv4.tcp_tw_reuse=1'
+    ulimits:
+      nofile:
+        hard: 1048576
+        soft: 1048576
+    user: 'nginx:nginx'
+    volumes:
+      - target: '/tmp'
+        tmpfs:
+          mode: 01777
+        type: 'tmpfs'
+      - target: '/run'
+        tmpfs:
+          mode: 01777
+        type: 'tmpfs'
+  php:
+    build:
+      context: './'
+      dockerfile: './Dockerfile'
+      target: 'php'
+    cap_drop:
+      - 'ALL'
+    depends_on:
+      mysql:
+        condition: 'service_healthy'
+      valkey:
+        condition: 'service_healthy'
+    environment:
+      APP_DEBUG: 'false'
+      APP_ENV: 'production'
+      MYSQL_DATABASE: 'db'
+      MYSQL_HOST: 'mysql'
+      MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
+      MYSQL_USER: 'db'
+      NODE_ENV: 'production'
+    healthcheck:
+      interval: '10s'
+      retries: 3
+      start_period: '30s'
+      test:
+        - 'CMD-SHELL'
+        - 'REQUEST_METHOD=GET SCRIPT_NAME=/fpm_ping SCRIPT_FILENAME=/fpm_ping cgi-fcgi -bind -connect localhost:9000 | grep -q pong || exit 1'
+      timeout: '5s'
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: 3
+        max-size: '10m'
+    networks:
+      - 'mysql'
+      - 'php'
+      - 'valkey'
+    read_only: true
+    restart: 'unless-stopped'
+    secrets:
+      - 'db_password'
+    security_opt:
+      - 'no-new-privileges:true'
+    stop_grace_period: '60s'
+    sysctls:
+      - 'net.core.somaxconn=65535'
+    ulimits:
+      nofile:
+        hard: 1048576
+        soft: 1048576
+    user: 'www-data:www-data'
+    volumes:
+      - target: '/tmp'
+        tmpfs:
+          mode: 01777
+        type: 'tmpfs'
+      - target: '/run'
+        tmpfs:
+          mode: 01777
+        type: 'tmpfs'
+  valkey:
+    cap_drop:
+      - 'ALL'
+    healthcheck:
+      interval: '10s'
+      retries: 3
+      start_period: '30s'
+      test:
+        - 'CMD'
+        - 'valkey-cli'
+        - 'ping'
+      timeout: '5s'
+    image: 'valkey/valkey:9-trixie'
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: 3
+        max-size: '10m'
+    networks:
+      - 'valkey'
+    read_only: true
+    restart: 'unless-stopped'
+    security_opt:
+      - 'no-new-privileges:true'
+    stop_grace_period: '60s'
+    sysctls:
+      - 'net.core.somaxconn=65535'
+    ulimits:
+      nofile:
+        hard: 1048576
+        soft: 1048576
+    user: 'valkey:valkey'
+    volumes:
+      - target: '/tmp'
+        tmpfs:
+          mode: 01777
+        type: 'tmpfs'
+      - target: '/run'
+        tmpfs:
+          mode: 01777
+        type: 'tmpfs'
+      - source: 'valkey_data'
+        target: '/data'
+        type: 'volume'
+volumes:
+  mysql_data:
+  valkey_data:

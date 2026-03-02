@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit
+  beStrictAboutChangesToGlobalState="true"
+  beStrictAboutOutputDuringTests="true"
+  beStrictAboutTestsThatDoNotTestAnything="true"
+  bootstrap="./vendor/autoload.php"
+  cacheDirectory="./.phpunit.cache"
+  defaultTimeLimit="1"
+  displayDetailsOnAllIssues="true"
+  enforceTimeLimit="true"
+  executionOrder="depends,defects"
+  failOnAllIssues="true"
+  requireCoverageMetadata="true"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
+>
+  <coverage>
+    <report>
+      <html outputDirectory="./.phpunit.coverage/html" />
+    </report>
+  </coverage>
+  <php>
+    <env name="APP_DEBUG" value="true" force="true" />
+    <env name="APP_ENV" value="ci" force="true" />
+    <env name="PHPUNIT_TESTSUITE" value="true" force="true" />
+  </php>
+  <source>
+    <include>
+      <directory>./src</directory>
+    </include>
+  </source>
+  <testsuites>
+    <testsuite name="tests">
+      <directory>./tests</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

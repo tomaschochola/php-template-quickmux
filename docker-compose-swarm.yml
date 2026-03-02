@@ -1,0 +1,126 @@
+secrets:
+  db_password:
+    file: './.secrets/db_password'
+  db_root_password:
+    file: './.secrets/db_root_password'
+services:
+  mysql:
+    deploy:
+      mode: 'replicated'
+      placement:
+        constraints:
+          - 'node.role == manager'
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: '1024M'
+        reservations:
+          cpus: '0.1'
+          memory: '64M'
+      restart_policy:
+        condition: 'any'
+        delay: '5s'
+      rollback_config:
+        delay: '0s'
+        failure_action: 'pause'
+        max_failure_ratio: 0
+        monitor: '60s'
+        order: 'stop-first'
+        parallelism: 1
+      update_config:
+        delay: '5s'
+        failure_action: 'pause'
+        max_failure_ratio: 0
+        monitor: '60s'
+        order: 'stop-first'
+        parallelism: 1
+  nginx:
+    deploy:
+      mode: 'replicated'
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: '1024M'
+        reservations:
+          cpus: '0.1'
+          memory: '64M'
+      restart_policy:
+        condition: 'any'
+        delay: '5s'
+      rollback_config:
+        delay: '0s'
+        failure_action: 'pause'
+        max_failure_ratio: 0
+        monitor: '60s'
+        order: 'stop-first'
+        parallelism: 1
+      update_config:
+        delay: '5s'
+        failure_action: 'pause'
+        max_failure_ratio: 0
+        monitor: '60s'
+        order: 'stop-first'
+        parallelism: 1
+    image: '${CI_REGISTRY_IMAGE:-oci.localhost}/nginx:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-dev}'
+  php:
+    deploy:
+      mode: 'replicated'
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: '1024M'
+        reservations:
+          cpus: '0.1'
+          memory: '64M'
+      restart_policy:
+        condition: 'any'
+        delay: '5s'
+      rollback_config:
+        delay: '0s'
+        failure_action: 'pause'
+        max_failure_ratio: 0
+        monitor: '60s'
+        order: 'stop-first'
+        parallelism: 1
+      update_config:
+        delay: '5s'
+        failure_action: 'pause'
+        max_failure_ratio: 0
+        monitor: '60s'
+        order: 'stop-first'
+        parallelism: 1
+    image: '${CI_REGISTRY_IMAGE:-oci.localhost}/php:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-dev}'
+  valkey:
+    deploy:
+      mode: 'replicated'
+      placement:
+        constraints:
+          - 'node.role == manager'
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: '1024M'
+        reservations:
+          cpus: '0.1'
+          memory: '64M'
+      restart_policy:
+        condition: 'any'
+        delay: '5s'
+      rollback_config:
+        delay: '0s'
+        failure_action: 'pause'
+        max_failure_ratio: 0
+        monitor: '60s'
+        order: 'stop-first'
+        parallelism: 1
+      update_config:
+        delay: '5s'
+        failure_action: 'pause'
+        max_failure_ratio: 0
+        monitor: '60s'
+        order: 'stop-first'
+        parallelism: 1
