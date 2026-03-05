@@ -26,7 +26,7 @@ use TomasChochola\Psr\Container\CallableResolver;
 use TomasChochola\Psr\Container\Container;
 use TomasChochola\Psr\Container\ResolverInterface;
 use TomasChochola\Psr\Http\RequestHandlers\ErrorHandlerMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\NullMiddlewareProvider;
+use TomasChochola\Psr\Http\RequestHandlers\NullMiddleware;
 use TomasChochola\Splx\VariadicIterator;
 
 use function assert;
@@ -66,7 +66,7 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
      */
     protected function registry(): iterable
     {
-        yield ErrorHandlerMiddleware::class => new CallableResolver([NullMiddlewareProvider::class, 'provide']);
+        yield ErrorHandlerMiddleware::class => new CallableResolver([NullMiddleware::class, 'provide']);
     }
 
     /**
