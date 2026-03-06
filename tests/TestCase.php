@@ -22,9 +22,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Src\Bootstrap\Bootstrapper;
-use TomasChochola\Psr\Container\CallableResolver;
-use TomasChochola\Psr\Container\Container;
-use TomasChochola\Psr\Container\ResolverInterface;
+use TomasChochola\Psr\Container\CargoContainer;
+use TomasChochola\Psr\Container\CargoInterface;
+use TomasChochola\Psr\Container\CallableCargo;
 use TomasChochola\Psr\Http\RequestHandlers\ErrorHandlerMiddleware;
 use TomasChochola\Psr\Http\RequestHandlers\NullMiddleware;
 use TomasChochola\Splx\VariadicIterator;
@@ -37,12 +37,12 @@ use function iterator_to_array;
  */
 abstract class TestCase extends PHPUnitFrameworkTestCase
 {
-    private Container|null $container = null;
+    private CargoContainer|null $container = null;
 
-    protected function container(): Container
+    protected function container(): CargoContainer
     {
         if ($this->container === null) {
-            $this->container = new Container(iterator_to_array(new VariadicIterator(Bootstrapper::load(), $this->registry())));
+            $this->container = new CargoContainer(iterator_to_array(new VariadicIterator(Bootstrapper::bootstrap(), $this->registry())));
         }
 
         return $this->container;
@@ -62,11 +62,11 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
     }
 
     /**
-     * @return iterable<int|string, ResolverInterface>
+     * @return iterable<int|string, CargoInterface>
      */
     protected function registry(): iterable
     {
-        yield ErrorHandlerMiddleware::class => new CallableResolver([NullMiddleware::class, 'provide']);
+        yield ErrorHandlerMiddleware::class => new CallableCargo([NullMiddleware::class, 'unload']);
     }
 
     /**

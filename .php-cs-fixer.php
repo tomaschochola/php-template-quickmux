@@ -13,11 +13,11 @@
 
 declare(strict_types=1);
 
-use TomasChochola\Tooling\PhpCsFixerConfig\ConfigFactory;
-use TomasChochola\Tooling\PhpCsFixerConfig\FinderFactory;
+use TomasChochola\Tooling\PhpCsFixerConfig\ConfigMaker;
+use TomasChochola\Tooling\PhpCsFixerConfig\FinderMaker;
 use TomasChochola\Tooling\PhpCsFixerConfig\PHP85;
 
-return ConfigFactory::make(FinderFactory::make()->in(__DIR__), \array_replace(
+return ConfigMaker::make(FinderMaker::make()->in(__DIR__), \array_replace(
     PHP85::base(),
     PHP85::project(),
     PHP85::tomaschochola(),

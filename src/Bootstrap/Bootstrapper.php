@@ -16,7 +16,7 @@ declare(strict_types=1);
 namespace Src\Bootstrap;
 
 use Override;
-use TomasChochola\Psr\Http\RequestHandlers\MuxRegistrar;
+use TomasChochola\Psr\Http\RequestHandlers\RouteManifest;
 use TomasChochola\Psr\Http\RequestHandlers\OkRequestHandler;
 use TomasChochola\Quickmux\Bootstrapper as TomasChocholaQuickmuxBootstrapper;
 
@@ -26,9 +26,9 @@ final readonly class Bootstrapper extends TomasChocholaQuickmuxBootstrapper
      * @return iterable<int|string, mixed>
      */
     #[Override]
-    public static function load(): iterable
+    public static function bootstrap(): iterable
     {
-        yield from parent::load();
+        yield from parent::bootstrap();
 
         yield from self::routes();
     }
@@ -38,7 +38,7 @@ final readonly class Bootstrapper extends TomasChocholaQuickmuxBootstrapper
      */
     protected static function routes(): iterable
     {
-        $routes = new MuxRegistrar();
+        $routes = new RouteManifest();
 
         $routes->route(['GET'], '/healthz/live', [OkRequestHandler::class]);
 

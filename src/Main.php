@@ -18,17 +18,16 @@ namespace Src;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Src\Bootstrap\Bootstrapper;
-use TomasChochola\Psr\Container\Container;
+use TomasChochola\Psr\Container\CargoContainer;
 use TomasChochola\Psr\Http\RequestHandlers\ResponseExiter;
-use TomasChochola\Quickmux\ApcuConfigCache;
-
+use TomasChochola\Quickmux\BootstrapperCache;
 use function assert;
 
 final readonly class Main
 {
     public function __invoke(): void
     {
-        $container = new Container(ApcuConfigCache::remember(Bootstrapper::load(...)));
+        $container = new CargoContainer(BootstrapperCache::remember(Bootstrapper::bootstrap(...)));
 
         $emitter = $container->get(ResponseExiter::class);
         $handler = $container->get(RequestHandlerInterface::class);
