@@ -22,9 +22,6 @@ use TomasChochola\Quickmux\Bootstrapper as TomasChocholaQuickmuxBootstrapper;
 
 final readonly class Bootstrapper extends TomasChocholaQuickmuxBootstrapper
 {
-    /**
-     * @return iterable<mixed, mixed>
-     */
     #[Override]
     public static function bootstrap(): iterable
     {
