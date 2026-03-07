@@ -22,9 +22,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Src\Bootstrap\Bootstrapper;
+use TomasChochola\Psr\Container\CallableCargo;
 use TomasChochola\Psr\Container\CargoContainer;
 use TomasChochola\Psr\Container\CargoInterface;
-use TomasChochola\Psr\Container\CallableCargo;
 use TomasChochola\Psr\Http\RequestHandlers\ErrorHandlerMiddleware;
 use TomasChochola\Psr\Http\RequestHandlers\NullMiddleware;
 use TomasChochola\Splx\VariadicIterator;
@@ -49,7 +49,7 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
     }
 
     /**
-     * @param array<int|string, mixed> $params
+     * @param array<mixed, mixed> $params
      */
     protected function createServerRequest(string $method, UriInterface|string $uri, array $params = []): ServerRequestInterface
     {
@@ -62,7 +62,7 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
     }
 
     /**
-     * @return iterable<int|string, CargoInterface>
+     * @return iterable<mixed, CargoInterface>
      */
     protected function registry(): iterable
     {

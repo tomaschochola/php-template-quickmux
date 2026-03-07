@@ -16,14 +16,14 @@ declare(strict_types=1);
 namespace Src\Bootstrap;
 
 use Override;
-use TomasChochola\Psr\Http\RequestHandlers\RouteManifest;
 use TomasChochola\Psr\Http\RequestHandlers\OkRequestHandler;
+use TomasChochola\Psr\Http\RequestHandlers\RouteManifest;
 use TomasChochola\Quickmux\Bootstrapper as TomasChocholaQuickmuxBootstrapper;
 
 final readonly class Bootstrapper extends TomasChocholaQuickmuxBootstrapper
 {
     /**
-     * @return iterable<int|string, mixed>
+     * @return iterable<mixed, mixed>
      */
     #[Override]
     public static function bootstrap(): iterable
@@ -34,7 +34,7 @@ final readonly class Bootstrapper extends TomasChocholaQuickmuxBootstrapper
     }
 
     /**
-     * @return iterable<int|string, mixed>
+     * @return iterable<mixed, mixed>
      */
     protected static function routes(): iterable
     {
