@@ -21,8 +21,8 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Src\Bootstrap\Bootstrapper;
-use TomasChochola\Psr\Container\DependencyContainer;
+use Src\ContainerProvider;
+use TomasChochola\Psr\Container\Container;
 
 use function assert;
 use function iterator_to_array;
@@ -32,12 +32,12 @@ use function iterator_to_array;
  */
 abstract class TestCase extends PHPUnitFrameworkTestCase
 {
-    private DependencyContainer|null $container = null;
+    private Container|null $container = null;
 
-    protected function container(): DependencyContainer
+    protected function container(): Container
     {
         if ($this->container === null) {
-            $this->container = new DependencyContainer(iterator_to_array(Bootstrapper::bootstrap()));
+            $this->container = new Container(iterator_to_array(new ContainerProvider()));
         }
 
         return $this->container;

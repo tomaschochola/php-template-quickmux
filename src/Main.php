@@ -17,10 +17,10 @@ namespace Src;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Src\Bootstrap\Bootstrapper;
-use TomasChochola\Psr\Container\DependencyContainer;
+use Src\ContainerProvider;
+use TomasChochola\Psr\Container\Container;
 use TomasChochola\Psr\Http\RequestHandlers\ResponseExiter;
-use TomasChochola\Quickmux\BootstrapperCache;
+use TomasChochola\Quickmux\ContainerProviderCache;
 
 use function assert;
 
@@ -28,7 +28,7 @@ final readonly class Main
 {
     public function __invoke(): void
     {
-        $container = new DependencyContainer(BootstrapperCache::remember(Bootstrapper::bootstrap(...)));
+        $container = new Container(ContainerProviderCache::remember(new ContainerProvider()));
 
         $emitter = $container->get(ResponseExiter::class);
         $handler = $container->get(RequestHandlerInterface::class);

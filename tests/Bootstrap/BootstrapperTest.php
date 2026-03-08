@@ -18,7 +18,7 @@ namespace Tests\Bootstrap;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
-use Src\Bootstrap\Bootstrapper;
+use Src\ContainerProvider;
 use Tests\TestCase;
 
 use function uniqid;
@@ -26,7 +26,7 @@ use function uniqid;
 /**
  * @internal
  */
-#[CoversClass(Bootstrapper::class)]
+#[CoversClass(ContainerProvider::class)]
 #[Small]
 final class BootstrapperTest extends TestCase
 {
