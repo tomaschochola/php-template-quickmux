@@ -9,7 +9,6 @@ services:
       target: 'devcontainer'
     command: 'sleep infinity'
     environment:
-      APP_DEBUG: 'true'
       APP_ENV: 'local'
       MYSQL_DATABASE: 'db'
       MYSQL_HOST: 'mysql'
@@ -38,7 +37,6 @@ services:
       dockerfile: './Dockerfile'
       target: 'devcontainer'
     environment:
-      APP_DEBUG: 'true'
       APP_ENV: 'local'
       NODE_ENV: 'development'
     volumes:

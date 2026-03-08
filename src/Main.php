@@ -18,7 +18,7 @@ namespace Src;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Src\Bootstrap\Bootstrapper;
-use TomasChochola\Psr\Container\CargoContainer;
+use TomasChochola\Psr\Container\DependencyContainer;
 use TomasChochola\Psr\Http\RequestHandlers\ResponseExiter;
 use TomasChochola\Quickmux\BootstrapperCache;
 
@@ -28,7 +28,7 @@ final readonly class Main
 {
     public function __invoke(): void
     {
-        $container = new CargoContainer(BootstrapperCache::remember(Bootstrapper::bootstrap(...)));
+        $container = new DependencyContainer(BootstrapperCache::remember(Bootstrapper::bootstrap(...)));
 
         $emitter = $container->get(ResponseExiter::class);
         $handler = $container->get(RequestHandlerInterface::class);

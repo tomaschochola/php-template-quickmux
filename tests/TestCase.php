@@ -22,12 +22,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Src\Bootstrap\Bootstrapper;
-use TomasChochola\Psr\Container\CallableCargo;
-use TomasChochola\Psr\Container\CargoContainer;
-use TomasChochola\Psr\Container\CargoInterface;
-use TomasChochola\Psr\Http\RequestHandlers\ErrorHandlerMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\NullMiddleware;
-use TomasChochola\Splx\VariadicIterator;
+use TomasChochola\Psr\Container\DependencyContainer;
 
 use function assert;
 use function iterator_to_array;
@@ -37,12 +32,12 @@ use function iterator_to_array;
  */
 abstract class TestCase extends PHPUnitFrameworkTestCase
 {
-    private CargoContainer|null $container = null;
+    private DependencyContainer|null $container = null;
 
-    protected function container(): CargoContainer
+    protected function container(): DependencyContainer
     {
         if ($this->container === null) {
-            $this->container = new CargoContainer(iterator_to_array(new VariadicIterator(Bootstrapper::bootstrap(), $this->registry())));
+            $this->container = new DependencyContainer(iterator_to_array(Bootstrapper::bootstrap()));
         }
 
         return $this->container;
@@ -59,14 +54,6 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
     protected function handle(ServerRequestInterface $request): ResponseInterface
     {
         return $this->resolve(RequestHandlerInterface::class)->handle($request);
-    }
-
-    /**
-     * @return iterable<mixed, CargoInterface>
-     */
-    protected function registry(): iterable
-    {
-        yield ErrorHandlerMiddleware::class => new CallableCargo([NullMiddleware::class, 'unload']);
     }
 
     /**

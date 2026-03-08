@@ -132,7 +132,6 @@ services:
       valkey:
         condition: 'service_healthy'
     environment:
-      APP_DEBUG: 'false'
       APP_ENV: 'production'
       MYSQL_DATABASE: 'db'
       MYSQL_HOST: 'mysql'

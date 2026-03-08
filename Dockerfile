@@ -10,7 +10,6 @@ FROM nginxinc/nginx-unprivileged:${NGINX_VERSION} AS versionednginx
 
 FROM versionedphp AS base
 WORKDIR /var/www/html
-ENV APP_DEBUG=false
 ENV APP_ENV=production
 ENV NODE_ENV=production
 RUN <<EOF
@@ -30,7 +29,6 @@ COPY ./ops/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY --from=versionedcomposer /usr/bin/composer /usr/bin/composer
 
 FROM base AS devcontainer
-ENV APP_DEBUG=true
 ENV APP_ENV=local
 ENV NODE_ENV=development
 RUN <<EOF

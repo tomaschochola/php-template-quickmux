@@ -20,7 +20,6 @@
     </report>
   </coverage>
   <php>
-    <env name="APP_DEBUG" value="true" force="true" />
     <env name="APP_ENV" value="ci" force="true" />
     <env name="PHPUNIT_TESTSUITE" value="true" force="true" />
   </php>
