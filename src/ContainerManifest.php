@@ -18,10 +18,10 @@ namespace Src;
 use Override;
 use TomasChochola\Psr\Http\RequestHandlers\OkRequestHandler;
 use TomasChochola\Psr\Http\RequestHandlers\RouteLoader;
-use TomasChochola\Quickmux\ContainerProvider as TomasChocholaQuickmuxContainerProvider;
+use TomasChochola\Quickmux\ContainerManifest as TomasChocholaQuickmuxContainerManifest;
 use Traversable;
 
-final readonly class ContainerProvider extends TomasChocholaQuickmuxContainerProvider
+readonly class ContainerManifest extends TomasChocholaQuickmuxContainerManifest
 {
     #[Override]
     public function getIterator(): Traversable

@@ -18,7 +18,7 @@ namespace Tests\Bootstrap;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
-use Src\ContainerProvider;
+use Src\ContainerManifest;
 use Tests\TestCase;
 
 use function uniqid;
@@ -26,9 +26,9 @@ use function uniqid;
 /**
  * @internal
  */
-#[CoversClass(ContainerProvider::class)]
+#[CoversClass(ContainerManifest::class)]
 #[Small]
-final class BootstrapperTest extends TestCase
+class BootstrapperTest extends TestCase
 {
     #[Test]
     public function testHealtzLive(): void

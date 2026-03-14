@@ -21,7 +21,7 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Src\ContainerProvider;
+use Src\ContainerManifest;
 use TomasChochola\Psr\Container\Container;
 
 use function assert;
@@ -37,7 +37,7 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
     protected function container(): Container
     {
         if ($this->container === null) {
-            $this->container = new Container(iterator_to_array(new ContainerProvider()));
+            $this->container = new Container(iterator_to_array(new ContainerManifest()));
         }
 
         return $this->container;
