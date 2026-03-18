@@ -20,6 +20,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TomasChochola\Psr\Container\Container;
 use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitter;
 use TomasChochola\Quickmux\ContainerManifestCache;
+use TomasChochola\Quickmux\CONTAINER_CACHE;
 
 use function assert;
 
@@ -27,7 +28,7 @@ readonly class Main
 {
     public function __invoke(): void
     {
-        $container = new Container(APP_CACHE::current() ? SimpleCaches::remember(new ApcuSimpleCache(), static::class, static fn(): array => iterator_to_array(new ContainerManifest())) : iterator_to_array(new ContainerManifest()));
+        $container = new Container(CONTAINER_CACHE::current() ? SimpleCaches::remember(new ApcuSimpleCache(), static::class, static fn(): array => iterator_to_array(new ContainerManifest())) : iterator_to_array(new ContainerManifest()));
 
         $emitter = $container->get(ResponseEmitter::class);
         $handler = $container->get(RequestHandlerInterface::class);
