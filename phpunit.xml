@@ -20,8 +20,7 @@
     </report>
   </coverage>
   <php>
-    <env name="APP_ENV" value="ci" force="true" />
-    <env name="TESTS_RUNNING" value="true" force="true" />
+    <env name="APP_ENV" value="unit" force="true" />
   </php>
   <source>
     <include>

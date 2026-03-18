@@ -62,10 +62,8 @@ final readonly class ContainerManifest implements IteratorAggregate
 
         yield from new PhpLoader(new GlobIterator('./.env.' . $scope . '.php'));
 
-        if (PHPUNIT\RUNNING::current()) {
+        if ($scope === 'unit') {
             yield from new PsrTestingManifest();
-
-            yield from new EnvLoader(['TESTS_RUNNING']);
 
             yield from new IniLoader(new GlobIterator('./config/phpunit.ini'));
 
