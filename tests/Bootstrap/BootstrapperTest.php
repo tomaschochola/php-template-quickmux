@@ -28,7 +28,7 @@ use function uniqid;
  */
 #[CoversClass(ContainerManifest::class)]
 #[Small]
-class BootstrapperTest extends TestCase
+final class BootstrapperTest extends TestCase
 {
     #[Test]
     public function testHealtzLive(): void
