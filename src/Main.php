@@ -17,9 +17,8 @@ namespace Src;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Src\ContainerManifest;
 use TomasChochola\Psr\Container\Container;
-use TomasChochola\Psr\Http\RequestHandlers\ResponseExiter;
+use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitter;
 use TomasChochola\Quickmux\ContainerManifestCache;
 
 use function assert;
@@ -28,13 +27,13 @@ readonly class Main
 {
     public function __invoke(): void
     {
-        $container = new Container(ContainerManifestCache::remember(new ContainerManifest()));
+        $container = new Container(APP_CACHE::current() ? SimpleCaches::remember(new ApcuSimpleCache(), static::class, static fn(): array => iterator_to_array(new ContainerManifest())) : iterator_to_array(new ContainerManifest()));
 
-        $emitter = $container->get(ResponseExiter::class);
+        $emitter = $container->get(ResponseEmitter::class);
         $handler = $container->get(RequestHandlerInterface::class);
         $request = $container->get(ServerRequestInterface::class);
 
-        assert($emitter instanceof ResponseExiter);
+        assert($emitter instanceof ResponseEmitter);
         assert($handler instanceof RequestHandlerInterface);
         assert($request instanceof ServerRequestInterface);
 
