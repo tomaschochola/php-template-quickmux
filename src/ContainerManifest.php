@@ -21,7 +21,6 @@ use Override;
 use TomasChochola\Psr\Http\RequestHandlers\OkRequestHandler;
 use TomasChochola\Psr\Http\RequestHandlers\RouteLoader;
 use TomasChochola\Quickmux\APP_ENV;
-use TomasChochola\Quickmux\PHPUNIT_RUNNING;
 use TomasChochola\Quickmux\EnvLoader;
 use TomasChochola\Quickmux\IniLoader;
 use TomasChochola\Quickmux\PhpLoader;
@@ -63,10 +62,10 @@ final readonly class ContainerManifest implements IteratorAggregate
 
         yield from new PhpLoader(new GlobIterator('./.env.' . $scope . '.php'));
 
-        if (PHPUNIT_RUNNING::current()) {
+        if (PHPUNIT\RUNNING::current()) {
             yield from new PsrTestingManifest();
 
-            yield from new EnvLoader(['PHPUNIT_RUNNING']);
+            yield from new EnvLoader(['TESTS_RUNNING']);
 
             yield from new IniLoader(new GlobIterator('./config/phpunit.ini'));
 
