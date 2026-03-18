@@ -101,7 +101,7 @@ audit_composer: ./vendor ./composer.json ./composer.lock
 
 .PHONY: install_npm
 install_npm: ./package.json ./package-lock.json
-	npm ci --ignore-scripts --no-progress --no-color --loglevel=warn --install-links --include=prod --include=dev --include=peer --include=optional
+	npm install --ignore-scripts --no-progress --no-color --loglevel=warn --install-links --include=prod --include=dev --include=peer --include=optional
 
 .PHONY: install_composer
 install_composer: ./composer.json ./composer.lock
