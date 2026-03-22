@@ -5,7 +5,8 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := never
 
 # Options
-DEBIAN_FRONTEND := noninteractive
+export DEBIAN_FRONTEND := noninteractive
+export PHP_CS_FIXER_FUTURE_MODE=1
 
 # Goals
 .PHONY: commit
