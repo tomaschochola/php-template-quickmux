@@ -22,6 +22,7 @@ use PHPUnit\Framework\Attributes\Test;
 
 /**
  * @internal
+ * @no-named-arguments
  */
 #[CoversNothing]
 #[Small]

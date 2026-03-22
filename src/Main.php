@@ -26,6 +26,9 @@ use TomasChochola\Quickmux\CONTAINER_CACHE;
 use function assert;
 use function iterator_to_array;
 
+/**
+ * @no-named-arguments
+ */
 final readonly class Main
 {
     public function __invoke(): void

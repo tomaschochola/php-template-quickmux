@@ -10,13 +10,13 @@ services:
     command: 'sleep infinity'
     environment:
       APP_ENV: 'local'
+      COMPOSER_CACHE_DIR: '/home/devcontainer/.composer'
       MYSQL_DATABASE: 'db'
       MYSQL_HOST: 'mysql'
       MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
       MYSQL_ROOT_PASSWORD_FILE: '/run/secrets/db_root_password'
       MYSQL_USER: 'db'
       NODE_ENV: 'development'
-      COMPOSER_CACHE_DIR: '/home/devcontainer/.composer'
       npm_config_cache: '/home/devcontainer/.npm'
     networks:
       - 'devcontainer'

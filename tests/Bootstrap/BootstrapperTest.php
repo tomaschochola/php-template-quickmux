@@ -25,6 +25,7 @@ use function uniqid;
 
 /**
  * @internal
+ * @no-named-arguments
  */
 #[CoversClass(ContainerManifest::class)]
 #[Small]
@@ -35,7 +36,7 @@ final class BootstrapperTest extends TestCase
     {
         $response = $this->handle($this->createServerRequest('GET', '/healthz/live'));
 
-        self::assertSame(200, $response->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
     }
 
     #[Test]
@@ -43,6 +44,6 @@ final class BootstrapperTest extends TestCase
     {
         $response = $this->handle($this->createServerRequest('GET', '/' . uniqid('notfound')));
 
-        self::assertSame(404, $response->getStatusCode());
+        $this->assertSame(404, $response->getStatusCode());
     }
 }

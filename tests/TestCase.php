@@ -29,6 +29,7 @@ use function iterator_to_array;
 
 /**
  * @internal
+ * @no-named-arguments
  */
 abstract class TestCase extends PHPUnitFrameworkTestCase
 {
