@@ -46,7 +46,7 @@ RUN <<EOF
   mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
   groupadd devcontainer
   useradd -s /bin/bash --gid devcontainer -m devcontainer
-  wget https://nodejs.org/dist/v24.13.1/node-v24.13.1-linux-x64.tar.xz -O node.tar.xz
+  wget https://nodejs.org/dist/v24.14.0/node-v24.14.0-linux-x64.tar.xz -O node.tar.xz
   tar -xf node.tar.xz -C /usr/local --strip-components=1
   rm node.tar.xz
   wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
