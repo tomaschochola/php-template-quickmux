@@ -46,6 +46,10 @@ RUN <<EOF
   mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
   groupadd devcontainer
   useradd -s /bin/bash --gid devcontainer -m devcontainer
+  mkdir -p /home/devcontainer/.composer
+  chown -R devcontainer:devcontainer /home/devcontainer/.composer
+  mkdir -p /home/devcontainer/.npm
+  chown -R devcontainer:devcontainer /home/devcontainer/.npm
   wget https://nodejs.org/dist/v24.14.0/node-v24.14.0-linux-x64.tar.xz -O node.tar.xz
   tar -xf node.tar.xz -C /usr/local --strip-components=1
   rm node.tar.xz

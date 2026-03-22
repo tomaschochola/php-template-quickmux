@@ -105,7 +105,7 @@
     {
       "no-api": true,
       "type": "git",
-      "url": "https://github.com/tomaschochola/php-iterables.git"
+      "url": "https://github.com/tomaschochola/php-splx.git"
     }
   ],
   "require": {
