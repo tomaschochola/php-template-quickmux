@@ -155,7 +155,7 @@ secret:
 
 .PHONY: devcontainer
 devcontainer:
-	devcontainer up --remove-existing-container
+	devcontainer up
 	devcontainer exec /bin/bash
 	docker compose -f ./docker-compose.yml -f ./.devcontainer/docker-compose.yml down --remove-orphans
 

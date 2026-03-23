@@ -36,7 +36,7 @@ final class BootstrapperTest extends TestCase
     {
         $response = $this->handle($this->createServerRequest('GET', '/healthz/live'));
 
-        $this->assertSame(200, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
     }
 
     #[Test]
@@ -44,6 +44,6 @@ final class BootstrapperTest extends TestCase
     {
         $response = $this->handle($this->createServerRequest('GET', '/' . uniqid('notfound')));
 
-        $this->assertSame(404, $response->getStatusCode());
+        self::assertSame(404, $response->getStatusCode());
     }
 }
