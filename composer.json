@@ -100,7 +100,22 @@
     {
       "no-api": true,
       "type": "git",
-      "url": "https://github.com/tomaschochola/php-quickmux.git"
+      "url": "https://github.com/tomaschochola/php-loaders.git"
+    },
+    {
+      "no-api": true,
+      "type": "git",
+      "url": "https://github.com/tomaschochola/php-pdo.git"
+    },
+    {
+      "no-api": true,
+      "type": "git",
+      "url": "https://github.com/tomaschochola/php-migrations.git"
+    },
+    {
+      "no-api": true,
+      "type": "git",
+      "url": "https://github.com/tomaschochola/php-pdo-mysql.git"
     }
   ],
   "require": {
@@ -110,7 +125,10 @@
     "ext-pdo_mysql": "*",
     "ext-redis": "*",
     "php": "^8.5.0",
-    "tomaschochola/php-quickmux": "^1.0@dev"
+    "tomaschochola/php-migrations": "^1.0@dev",
+    "tomaschochola/php-pdo": "^1.0@dev",
+    "tomaschochola/php-pdo-mysql": "^1.0@dev",
+    "tomaschochola/php-loaders": "^1.0@dev"
   },
   "require-dev": {
     "ext-intl": "*",

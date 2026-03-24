@@ -21,10 +21,8 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Src\ContainerManifest;
+use Src\Integration\ContainerManifest;
 use TomasChochola\Psr\Container\Container;
-
-use function assert;
 use function iterator_to_array;
 
 /**
@@ -49,27 +47,11 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
      */
     protected function createServerRequest(string $method, UriInterface|string $uri, array $params = []): ServerRequestInterface
     {
-        return $this->resolve(ServerRequestFactoryInterface::class)->createServerRequest($method, $uri, $params);
+        return $this->container()->resolve(ServerRequestFactoryInterface::class)->createServerRequest($method, $uri, $params);
     }
 
     protected function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->resolve(RequestHandlerInterface::class)->handle($request);
-    }
-
-    /**
-     * @template T of object
-     *
-     * @param class-string<T> $class
-     *
-     * @return T
-     */
-    protected function resolve(string $class): object
-    {
-        $resolved = $this->container()->get($class);
-
-        assert($resolved instanceof $class);
-
-        return $resolved;
+        return $this->container()->resolve(RequestHandlerInterface::class)->handle($request);
     }
 }
