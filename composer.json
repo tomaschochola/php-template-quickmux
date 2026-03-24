@@ -101,11 +101,6 @@
       "no-api": true,
       "type": "git",
       "url": "https://github.com/tomaschochola/php-quickmux.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-splx.git"
     }
   ],
   "require": {
