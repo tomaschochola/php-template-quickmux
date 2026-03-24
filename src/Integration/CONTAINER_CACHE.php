@@ -23,7 +23,7 @@ use const PHP_SAPI;
 /**
  * @no-named-arguments
  */
-readonly class CONTAINER_CACHE
+final readonly class CONTAINER_CACHE
 {
     public static function current(): bool
     {
