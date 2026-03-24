@@ -35,7 +35,7 @@ final readonly class ContainerManifest implements IteratorAggregate
     #[Override]
     public function getIterator(): Traversable
     {
-        yield from new EnvLoader(['APP_ENV']);
+        yield from new EnvLoader(['APP_ENV', 'MYSQL_HOST', 'MYSQL_DATABASE', 'MYSQL_USER', 'MYSQL_PASSWORD_FILE']);
 
         yield from self::routes();
 
@@ -58,6 +58,12 @@ final readonly class ContainerManifest implements IteratorAggregate
         yield from new PhpLoader(new GlobIterator('./.env.' . $scope . '.php'));
 
         if ($scope === 'unit') {
+            yield from new EnvLoader(['MYSQL_ROOT_PASSWORD_FILE' => 'MYSQL_PASSWORD_FILE']);
+
+            yield 'MYSQL_USER' => 'root';
+
+            yield 'MYSQL_DATABASE' => '';
+
             yield from new IniLoader(new GlobIterator('./config/phpunit.ini'));
 
             yield from new IniLoader(new GlobIterator('./.phpunit.ini'));

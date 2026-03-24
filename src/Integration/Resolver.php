@@ -331,13 +331,13 @@ final readonly class Resolver
         $factory = $container->resolve(PdoSettingsFactory::class);
 
         return $factory->createFrom([
-            'host' => $container->get('PDO_HOST'),
-            'port' => $container->get('PDO_PORT'),
-            'dbname' => $container->get('PDO_DBNAME'),
-            'socket' => $container->get('PDO_SOCKET'),
-            'username' => $container->get('PDO_USERNAME'),
-            'password' => $container->get('PDO_PASSWORD'),
-            'options' => $container->get('PDO_OPTIONS'),
+            'host' => $container->get('MYSQL_HOST'),
+            'port' => '',
+            'dbname' => $container->get('MYSQL_DATABASE'),
+            'socket' => '',
+            'username' => $container->get('MYSQL_USER'),
+            'password' => $container->get('MYSQL_PASSWORD_FILE'),
+            'options' => [],
         ]);
     }
 
