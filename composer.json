@@ -135,10 +135,8 @@
   ],
   "require": {
     "ext-apcu": "*",
-    "ext-json": "*",
     "ext-pdo": "*",
     "ext-pdo_mysql": "*",
-    "ext-redis": "*",
     "php": "^8.5.0",
     "tomaschochola/php-migrations": "^1.0@dev",
     "tomaschochola/php-migrations-mysql": "^1.0@dev",
