@@ -20,17 +20,17 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Src\Integration\CONTAINER_CACHE;
 use Src\Integration\ContainerManifest;
 use TomasChochola\Psr\Container\Container;
-use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitter;
+use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitterInterface;
 use TomasChochola\Psr\SimpleCache\ApcuSimpleCache;
 use TomasChochola\Psr\SimpleCache\SimpleCaches;
 
 $container = new Container(CONTAINER_CACHE::current() ? SimpleCaches::remember(new ApcuSimpleCache(), __FILE__, static fn(): array => \iterator_to_array(new ContainerManifest())) : \iterator_to_array(new ContainerManifest()));
 
-$emitter = $container->get(ResponseEmitter::class);
+$emitter = $container->get(ResponseEmitterInterface::class);
 $handler = $container->get(RequestHandlerInterface::class);
 $request = $container->get(ServerRequestInterface::class);
 
-\assert($emitter instanceof ResponseEmitter);
+\assert($emitter instanceof ResponseEmitterInterface);
 \assert($handler instanceof RequestHandlerInterface);
 \assert($request instanceof ServerRequestInterface);
 

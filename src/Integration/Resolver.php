@@ -17,7 +17,6 @@ namespace Src\Integration;
 
 use LogicException;
 use NoDiscard;
-use PDO;
 use Pdo\Mysql;
 use Psr\Clock\ClockInterface;
 use Psr\Container\ContainerInterface;
@@ -25,62 +24,45 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use TomasChochola\Migrations\MigrationsInterface;
 use TomasChochola\Migrations\Migrator;
+use TomasChochola\Migrations\MigratorInterface;
 use TomasChochola\Migrations\Mysql\MysqlMigrations;
 use TomasChochola\Pdo\LockerInterface;
+use TomasChochola\Pdo\ProbeInterface;
 use TomasChochola\Pdo\Mysql\MysqlFactory;
 use TomasChochola\Pdo\Mysql\MysqlLocker;
 use TomasChochola\Pdo\Mysql\MysqlProbe;
 use TomasChochola\Pdo\Mysql\MysqlQuery;
-use TomasChochola\Pdo\Mysql\MysqlSettings;
 use TomasChochola\Pdo\Mysql\MysqlSettingsFactory;
-use TomasChochola\Pdo\Mysql\MysqlSettingsInterface;
 use TomasChochola\Pdo\QueryInterface;
-use TomasChochola\Psr\Clock\FixedClock;
 use TomasChochola\Psr\Clock\NowClock;
-use TomasChochola\Psr\Http\Client\CurlClient;
 use TomasChochola\Psr\Http\Factory\CgiServerRequestFactory;
-use TomasChochola\Psr\Http\Factory\RequestFactory;
 use TomasChochola\Psr\Http\Factory\ResponseFactory;
 use TomasChochola\Psr\Http\Factory\ServerRequestFactory;
 use TomasChochola\Psr\Http\Factory\StreamFactory;
-use TomasChochola\Psr\Http\Factory\UploadedFileFactory;
 use TomasChochola\Psr\Http\Factory\UriFactory;
 use TomasChochola\Psr\Http\RequestHandlers\AfterPipeline;
+use TomasChochola\Psr\Http\RequestHandlers\AfterPipelineInterface;
 use TomasChochola\Psr\Http\RequestHandlers\BeforePipeline;
-use TomasChochola\Psr\Http\RequestHandlers\ErrorCatcherMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\ErrorLoggerMiddleware;
+use TomasChochola\Psr\Http\RequestHandlers\BeforePipelineInterface;
 use TomasChochola\Psr\Http\RequestHandlers\ErrorRaiserMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\ExceptionCatcherMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\ExceptionLoggerMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\JsonEncoder;
-use TomasChochola\Psr\Http\RequestHandlers\JsonResponder;
-use TomasChochola\Psr\Http\RequestHandlers\JsonWriter;
-use TomasChochola\Psr\Http\RequestHandlers\NegativeCatcherMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\NoContentRequestHandler;
 use TomasChochola\Psr\Http\RequestHandlers\NotFoundRequestHandler;
-use TomasChochola\Psr\Http\RequestHandlers\NullMiddleware;
 use TomasChochola\Psr\Http\RequestHandlers\OkRequestHandler;
 use TomasChochola\Psr\Http\RequestHandlers\PipelineResolver;
-use TomasChochola\Psr\Http\RequestHandlers\RequireParsedBodyMiddleware;
+use TomasChochola\Psr\Http\RequestHandlers\PipelineResolverInterface;
 use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitter;
+use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitterInterface;
 use TomasChochola\Psr\Http\RequestHandlers\RouteMatcher;
+use TomasChochola\Psr\Http\RequestHandlers\RouteMatcherInterface;
 use TomasChochola\Psr\Http\RequestHandlers\RouteRequestHandler;
-use TomasChochola\Psr\Http\RequestHandlers\RouteSettings;
-use TomasChochola\Psr\Http\RequestHandlers\StreamWriter;
+use TomasChochola\Psr\Http\RequestHandlers\RouteSettingsInterface;
 use TomasChochola\Psr\Http\RequestHandlers\ThrowableCatcherMiddleware;
 use TomasChochola\Psr\Http\RequestHandlers\ThrowableLoggerMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\WithRequestCookiesMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\WithRequestFormMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\WithRequestHeadersMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\WithRequestJsonMiddleware;
-use TomasChochola\Psr\Http\RequestHandlers\WithRequestQueryMiddleware;
-use TomasChochola\Psr\Log\CollectingExporter;
-use TomasChochola\Psr\Log\ExceptFilter;
 use TomasChochola\Psr\Log\ExporterInterface;
 use TomasChochola\Psr\Log\FilterExporter;
 use TomasChochola\Psr\Log\FilterInterface;
@@ -95,8 +77,6 @@ use TomasChochola\Psr\Log\Recorder;
 use TomasChochola\Psr\Log\RecorderInterface;
 use TomasChochola\Psr\Log\ResourceWriter;
 use TomasChochola\Psr\Log\WriterInterface;
-use TomasChochola\Psr\SimpleCache\ApcuSimpleCache;
-use TomasChochola\Psr\SimpleCache\NullSimpleCache;
 use UnexpectedValueException;
 
 use function assert;
@@ -114,157 +94,54 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function afterPipeline(ContainerInterface $container): AfterPipeline
+    public static function AfterPipelineInterface(ContainerInterface $container): AfterPipelineInterface
     {
         return new AfterPipeline();
     }
 
     #[NoDiscard]
-    public static function apcuSimpleCache(ContainerInterface $container): ApcuSimpleCache
-    {
-        return new ApcuSimpleCache();
-    }
-
-    #[NoDiscard]
-    public static function beforePipeline(ContainerInterface $container): BeforePipeline
+    public static function BeforePipelineInterface(ContainerInterface $container): BeforePipelineInterface
     {
         return new BeforePipeline();
     }
 
     #[NoDiscard]
-    public static function cgiServerRequestFactory(ContainerInterface $container): CgiServerRequestFactory
+    public static function ClockInterface(ContainerInterface $container): ClockInterface
     {
-        $factory = $container->get(ServerRequestFactoryInterface::class);
-
-        assert($factory instanceof ServerRequestFactoryInterface);
-
-        return new CgiServerRequestFactory($factory);
+        return new NowClock();
     }
 
     #[NoDiscard]
-    public static function collectingExporter(ContainerInterface $container): CollectingExporter
-    {
-        return new CollectingExporter();
-    }
-
-    #[NoDiscard]
-    public static function curlClient(ContainerInterface $container): CurlClient
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new CurlClient($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function errorCatcherMiddleware(ContainerInterface $container): ErrorCatcherMiddleware
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new ErrorCatcherMiddleware($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function errorLoggerMiddleware(ContainerInterface $container): ErrorLoggerMiddleware
-    {
-        $logger = $container->get(LoggerInterface::class);
-
-        assert($logger instanceof LoggerInterface);
-
-        return new ErrorLoggerMiddleware($logger);
-    }
-
-    #[NoDiscard]
-    public static function errorRaiserMiddleware(ContainerInterface $container): ErrorRaiserMiddleware
+    public static function ErrorRaiserMiddleware(ContainerInterface $container): MiddlewareInterface
     {
         return new ErrorRaiserMiddleware();
     }
 
     #[NoDiscard]
-    public static function exceptFilter(ContainerInterface $container): ExceptFilter
-    {
-        return new ExceptFilter([]);
-    }
-
-    #[NoDiscard]
-    public static function exceptionCatcherMiddleware(ContainerInterface $container): ExceptionCatcherMiddleware
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new ExceptionCatcherMiddleware($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function exceptionLoggerMiddleware(ContainerInterface $container): ExceptionLoggerMiddleware
-    {
-        $logger = $container->get(LoggerInterface::class);
-
-        assert($logger instanceof LoggerInterface);
-
-        return new ExceptionLoggerMiddleware($logger);
-    }
-
-    #[NoDiscard]
-    public static function filterCollectingExporter(ContainerInterface $container): FilterExporter
+    public static function ExporterInterface(ContainerInterface $container): ExporterInterface
     {
         $filter = $container->get(FilterInterface::class);
-        $exporter = $container->get(CollectingExporter::class);
-
-        assert($filter instanceof FilterInterface);
-        assert($exporter instanceof CollectingExporter);
-
-        return new FilterExporter($filter, $exporter);
-    }
-
-    #[NoDiscard]
-    public static function filterFormatterWriterExporter(ContainerInterface $container): FilterExporter
-    {
-        $filter = $container->get(FilterInterface::class);
-        $exporter = $container->get(FormatterWriterExporter::class);
-
-        assert($filter instanceof FilterInterface);
-        assert($exporter instanceof FormatterWriterExporter);
-
-        return new FilterExporter($filter, $exporter);
-    }
-
-    #[NoDiscard]
-    public static function fixedClock(ContainerInterface $container): FixedClock
-    {
-        return new FixedClock();
-    }
-
-    #[NoDiscard]
-    public static function formatterWriterExporter(ContainerInterface $container): FormatterWriterExporter
-    {
         $formatter = $container->get(FormatterInterface::class);
         $writer = $container->get(WriterInterface::class);
 
+        assert($filter instanceof FilterInterface);
         assert($formatter instanceof FormatterInterface);
         assert($writer instanceof WriterInterface);
 
-        return new FormatterWriterExporter($formatter, $writer);
+        return new FilterExporter(
+            $filter,
+            new FormatterWriterExporter($formatter, $writer),
+        );
     }
 
     #[NoDiscard]
-    public static function interpolator(ContainerInterface $container): Interpolator
+    public static function FilterInterface(ContainerInterface $container): FilterInterface
     {
-        return new Interpolator();
+        return new OnlyFilter(['notice', 'warning', 'error', 'critical', 'alert', 'emergency']);
     }
 
     #[NoDiscard]
-    public static function jsonEncoder(ContainerInterface $container): JsonEncoder
-    {
-        return new JsonEncoder();
-    }
-
-    #[NoDiscard]
-    public static function jsonFormatter(ContainerInterface $container): JsonFormatter
+    public static function FormatterInterface(ContainerInterface $container): FormatterInterface
     {
         $interpolator = $container->get(InterpolatorInterface::class);
 
@@ -274,31 +151,23 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function jsonResponder(ContainerInterface $container): JsonResponder
+    public static function InterpolatorInterface(ContainerInterface $container): InterpolatorInterface
     {
-        $jsonWriter = $container->get(JsonWriter::class);
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($jsonWriter instanceof JsonWriter);
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new JsonResponder($jsonWriter, $responseFactory);
+        return new Interpolator();
     }
 
     #[NoDiscard]
-    public static function jsonWriter(ContainerInterface $container): JsonWriter
+    public static function LockerInterface(ContainerInterface $container): LockerInterface
     {
-        $streamWriter = $container->get(StreamWriter::class);
-        $jsonEncoder = $container->get(JsonEncoder::class);
+        $query = $container->get(QueryInterface::class);
 
-        assert($streamWriter instanceof StreamWriter);
-        assert($jsonEncoder instanceof JsonEncoder);
+        assert($query instanceof QueryInterface);
 
-        return new JsonWriter($streamWriter, $jsonEncoder);
+        return new MysqlLocker($query);
     }
 
     #[NoDiscard]
-    public static function logger(ContainerInterface $container): Logger
+    public static function LoggerInterface(ContainerInterface $container): LoggerInterface
     {
         $exporter = $container->get(ExporterInterface::class);
         $recorder = $container->get(RecorderInterface::class);
@@ -310,51 +179,7 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function migrator(ContainerInterface $container): Migrator
-    {
-        $pdo = $container->get(QueryInterface::class);
-        $logger = $container->get(LoggerInterface::class);
-        $migrations = $container->get(MigrationsInterface::class);
-        $locker = $container->get(LockerInterface::class);
-
-        assert($pdo instanceof QueryInterface);
-        assert($logger instanceof LoggerInterface);
-        assert($migrations instanceof MigrationsInterface);
-        assert($locker instanceof LockerInterface);
-
-        return new Migrator($pdo, $logger, $migrations, $locker);
-    }
-
-    #[NoDiscard]
-    public static function mysql(ContainerInterface $container): Mysql
-    {
-        $factory = $container->get(MysqlFactory::class);
-        $settings = $container->get(MysqlSettingsInterface::class);
-
-        assert($factory instanceof MysqlFactory);
-        assert($settings instanceof MysqlSettingsInterface);
-
-        return $factory->create($settings);
-    }
-
-    #[NoDiscard]
-    public static function mysqlFactory(ContainerInterface $container): MysqlFactory
-    {
-        return new MysqlFactory();
-    }
-
-    #[NoDiscard]
-    public static function mysqlLocker(ContainerInterface $container): MysqlLocker
-    {
-        $query = $container->get(QueryInterface::class);
-
-        assert($query instanceof QueryInterface);
-
-        return new MysqlLocker($query);
-    }
-
-    #[NoDiscard]
-    public static function mysqlMigrations(ContainerInterface $container): MysqlMigrations
+    public static function MigrationsInterface(ContainerInterface $container): MigrationsInterface
     {
         $query = $container->get(QueryInterface::class);
         $logger = $container->get(LoggerInterface::class);
@@ -366,7 +191,49 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function mysqlProbe(ContainerInterface $container): MysqlProbe
+    public static function MigratorInterface(ContainerInterface $container): MigratorInterface
+    {
+        $query = $container->get(QueryInterface::class);
+        $logger = $container->get(LoggerInterface::class);
+        $migrations = $container->get(MigrationsInterface::class);
+        $locker = $container->get(LockerInterface::class);
+
+        assert($query instanceof QueryInterface);
+        assert($logger instanceof LoggerInterface);
+        assert($migrations instanceof MigrationsInterface);
+        assert($locker instanceof LockerInterface);
+
+        return new Migrator($query, $logger, $migrations, $locker);
+    }
+
+    #[NoDiscard]
+    public static function NotFoundRequestHandler(ContainerInterface $container): RequestHandlerInterface
+    {
+        $factory = $container->get(ResponseFactoryInterface::class);
+
+        assert($factory instanceof ResponseFactoryInterface);
+
+        return new NotFoundRequestHandler($factory);
+    }
+
+    #[NoDiscard]
+    public static function OkRequestHandler(ContainerInterface $container): RequestHandlerInterface
+    {
+        $factory = $container->get(ResponseFactoryInterface::class);
+
+        assert($factory instanceof ResponseFactoryInterface);
+
+        return new OkRequestHandler($factory);
+    }
+
+    #[NoDiscard]
+    public static function PipelineResolverInterface(ContainerInterface $container): PipelineResolverInterface
+    {
+        return new PipelineResolver($container);
+    }
+
+    #[NoDiscard]
+    public static function ProbeInterface(ContainerInterface $container): ProbeInterface
     {
         $query = $container->get(QueryInterface::class);
 
@@ -376,111 +243,27 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function mysqlQuery(ContainerInterface $container): MysqlQuery
+    public static function QueryInterface(ContainerInterface $container): QueryInterface
     {
-        $pdo = $container->get(PDO::class);
+        $pdo = (new MysqlFactory())->create(
+            (new MysqlSettingsFactory())->createFrom([
+                'host' => $container->get('MYSQL_HOST'),
+                'port' => '',
+                'dbname' => $container->get('MYSQL_DATABASE'),
+                'socket' => '',
+                'username' => $container->get('MYSQL_USER'),
+                'password' => $container->get('MYSQL_PASSWORD_FILE'),
+                'options' => [],
+            ]),
+        );
 
-        assert($pdo instanceof PDO);
+        assert($pdo instanceof Mysql);
 
         return new MysqlQuery($pdo);
     }
 
     #[NoDiscard]
-    public static function mysqlSettings(ContainerInterface $container): MysqlSettings
-    {
-        $factory = $container->get(MysqlSettingsFactory::class);
-
-        assert($factory instanceof MysqlSettingsFactory);
-
-        return $factory->createFrom([
-            'host' => $container->get('MYSQL_HOST'),
-            'port' => '',
-            'dbname' => $container->get('MYSQL_DATABASE'),
-            'socket' => '',
-            'username' => $container->get('MYSQL_USER'),
-            'password' => $container->get('MYSQL_PASSWORD_FILE'),
-            'options' => [],
-        ]);
-    }
-
-    #[NoDiscard]
-    public static function mysqlSettingsFactory(ContainerInterface $container): MysqlSettingsFactory
-    {
-        return new MysqlSettingsFactory();
-    }
-
-    #[NoDiscard]
-    public static function negativeCatcherMiddleware(ContainerInterface $container): NegativeCatcherMiddleware
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new NegativeCatcherMiddleware($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function noContentRequestHandler(ContainerInterface $container): NoContentRequestHandler
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new NoContentRequestHandler($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function notFoundRequestHandler(ContainerInterface $container): NotFoundRequestHandler
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new NotFoundRequestHandler($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function nowClock(ContainerInterface $container): NowClock
-    {
-        return new NowClock();
-    }
-
-    #[NoDiscard]
-    public static function nullMiddleware(ContainerInterface $container): NullMiddleware
-    {
-        return new NullMiddleware();
-    }
-
-    #[NoDiscard]
-    public static function nullSimpleCache(ContainerInterface $container): NullSimpleCache
-    {
-        return new NullSimpleCache();
-    }
-
-    #[NoDiscard]
-    public static function okRequestHandler(ContainerInterface $container): OkRequestHandler
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new OkRequestHandler($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function onlyFilter(ContainerInterface $container): OnlyFilter
-    {
-        return new OnlyFilter(['notice', 'warning', 'error', 'critical', 'alert', 'emergency']);
-    }
-
-    #[NoDiscard]
-    public static function pipelineResolver(ContainerInterface $container): PipelineResolver
-    {
-        return new PipelineResolver($container);
-    }
-
-    #[NoDiscard]
-    public static function recorder(ContainerInterface $container): Recorder
+    public static function RecorderInterface(ContainerInterface $container): RecorderInterface
     {
         $clock = $container->get(ClockInterface::class);
 
@@ -490,127 +273,87 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function requestFactory(ContainerInterface $container): RequestFactory
-    {
-        $streamFactory = $container->get(StreamFactoryInterface::class);
-        $uriFactory = $container->get(UriFactoryInterface::class);
-
-        assert($streamFactory instanceof StreamFactoryInterface);
-        assert($uriFactory instanceof UriFactoryInterface);
-
-        return new RequestFactory($streamFactory, $uriFactory);
-    }
-
-    #[NoDiscard]
-    public static function requireParsedBodyMiddleware(ContainerInterface $container): RequireParsedBodyMiddleware
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new RequireParsedBodyMiddleware($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function resourceWriter(ContainerInterface $container): ResourceWriter
-    {
-        $resource = fopen('php://stderr', 'w');
-
-        if (!is_resource($resource)) {
-            throw new UnexpectedValueException('fopen');
-        }
-
-        return new ResourceWriter($resource);
-    }
-
-    #[NoDiscard]
-    public static function responseEmitter(ContainerInterface $container): ResponseEmitter
+    public static function ResponseEmitterInterface(ContainerInterface $container): ResponseEmitterInterface
     {
         return new ResponseEmitter();
     }
 
     #[NoDiscard]
-    public static function responseFactory(ContainerInterface $container): ResponseFactory
+    public static function ResponseFactoryInterface(ContainerInterface $container): ResponseFactoryInterface
     {
-        $streamFactory = $container->get(StreamFactoryInterface::class);
+        $factory = $container->get(StreamFactoryInterface::class);
 
-        assert($streamFactory instanceof StreamFactoryInterface);
+        assert($factory instanceof StreamFactoryInterface);
 
-        return new ResponseFactory($streamFactory);
+        return new ResponseFactory($factory);
     }
 
     #[NoDiscard]
-    public static function routeMatcher(ContainerInterface $container): RouteMatcher
+    public static function RouteMatcherInterface(ContainerInterface $container): RouteMatcherInterface
     {
-        $registry = $container->get(RouteSettings::class);
+        $settings = $container->get(RouteSettingsInterface::class);
 
-        assert($registry instanceof RouteSettings);
+        assert($settings instanceof RouteSettingsInterface);
 
-        return new RouteMatcher($registry);
+        return new RouteMatcher($settings);
     }
 
     #[NoDiscard]
-    public static function routeRequestHandler(ContainerInterface $container): RouteRequestHandler
+    public static function RouteRequestHandler(ContainerInterface $container): RequestHandlerInterface
     {
-        $after = $container->get(AfterPipeline::class);
-        $before = $container->get(BeforePipeline::class);
-        $matcher = $container->get(RouteMatcher::class);
-        $resolver = $container->get(PipelineResolver::class);
+        $after = $container->get(AfterPipelineInterface::class);
+        $before = $container->get(BeforePipelineInterface::class);
+        $matcher = $container->get(RouteMatcherInterface::class);
+        $resolver = $container->get(PipelineResolverInterface::class);
 
-        assert($after instanceof AfterPipeline);
-        assert($before instanceof BeforePipeline);
-        assert($matcher instanceof RouteMatcher);
-        assert($resolver instanceof PipelineResolver);
+        assert($after instanceof AfterPipelineInterface);
+        assert($before instanceof BeforePipelineInterface);
+        assert($matcher instanceof RouteMatcherInterface);
+        assert($resolver instanceof PipelineResolverInterface);
 
         return new RouteRequestHandler($matcher, $resolver, $before, $after);
     }
 
     #[NoDiscard]
-    public static function serverRequest(ContainerInterface $container): ServerRequestInterface
+    public static function ServerRequestFactoryInterface(ContainerInterface $container): ServerRequestFactoryInterface
     {
-        $factory = $container->get(CgiServerRequestFactory::class);
+        $stream = $container->get(StreamFactoryInterface::class);
+        $uri = $container->get(UriFactoryInterface::class);
 
-        assert($factory instanceof CgiServerRequestFactory);
+        assert($stream instanceof StreamFactoryInterface);
+        assert($uri instanceof UriFactoryInterface);
 
-        return $factory->create();
+        return new ServerRequestFactory($stream, $uri);
     }
 
     #[NoDiscard]
-    public static function serverRequestFactory(ContainerInterface $container): ServerRequestFactory
+    public static function ServerRequestInterface(ContainerInterface $container): ServerRequestInterface
     {
-        $streamFactory = $container->get(StreamFactoryInterface::class);
-        $uriFactory = $container->get(UriFactoryInterface::class);
+        $factory = $container->get(ServerRequestFactoryInterface::class);
 
-        assert($streamFactory instanceof StreamFactoryInterface);
-        assert($uriFactory instanceof UriFactoryInterface);
+        assert($factory instanceof ServerRequestFactoryInterface);
 
-        return new ServerRequestFactory($streamFactory, $uriFactory);
+        return (new CgiServerRequestFactory($factory))->create();
     }
 
     #[NoDiscard]
-    public static function streamFactory(ContainerInterface $container): StreamFactory
+    public static function StreamFactoryInterface(ContainerInterface $container): StreamFactoryInterface
     {
         return new StreamFactory();
     }
 
     #[NoDiscard]
-    public static function streamWriter(ContainerInterface $container): StreamWriter
+    public static function ThrowableCatcherMiddleware(ContainerInterface $container): MiddlewareInterface
     {
-        return new StreamWriter();
+        $factory = $container->get(ResponseFactoryInterface::class);
+
+        assert($factory instanceof ResponseFactoryInterface);
+
+        return new ThrowableCatcherMiddleware($factory);
     }
 
     #[NoDiscard]
-    public static function throwableCatcherMiddleware(ContainerInterface $container): ThrowableCatcherMiddleware
-    {
-        $responseFactory = $container->get(ResponseFactoryInterface::class);
-
-        assert($responseFactory instanceof ResponseFactoryInterface);
-
-        return new ThrowableCatcherMiddleware($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function throwableLoggerMiddleware(ContainerInterface $container): ThrowableLoggerMiddleware
+    public static function ThrowableLoggerMiddleware(ContainerInterface $container): MiddlewareInterface
     {
         $logger = $container->get(LoggerInterface::class);
 
@@ -620,50 +363,20 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function uploadedFileFactory(ContainerInterface $container): UploadedFileFactory
-    {
-        return new UploadedFileFactory();
-    }
-
-    #[NoDiscard]
-    public static function uriFactory(ContainerInterface $container): UriFactory
+    public static function UriFactoryInterface(ContainerInterface $container): UriFactoryInterface
     {
         return new UriFactory();
     }
 
     #[NoDiscard]
-    public static function withRequestCookiesMiddleware(ContainerInterface $container): WithRequestCookiesMiddleware
+    public static function WriterInterface(ContainerInterface $container): WriterInterface
     {
-        return new WithRequestCookiesMiddleware();
-    }
+        $resource = fopen('php://stderr', 'w');
 
-    #[NoDiscard]
-    public static function withRequestFormMiddleware(ContainerInterface $container): WithRequestFormMiddleware
-    {
-        $streamFactory = $container->get(StreamFactoryInterface::class);
-        $uploadedFileFactory = $container->get(UploadedFileFactoryInterface::class);
+        if (!is_resource($resource)) {
+            throw new UnexpectedValueException('fopen');
+        }
 
-        assert($streamFactory instanceof StreamFactoryInterface);
-        assert($uploadedFileFactory instanceof UploadedFileFactoryInterface);
-
-        return new WithRequestFormMiddleware($streamFactory, $uploadedFileFactory);
-    }
-
-    #[NoDiscard]
-    public static function withRequestHeadersMiddleware(ContainerInterface $container): WithRequestHeadersMiddleware
-    {
-        return new WithRequestHeadersMiddleware();
-    }
-
-    #[NoDiscard]
-    public static function withRequestJsonMiddleware(ContainerInterface $container): WithRequestJsonMiddleware
-    {
-        return new WithRequestJsonMiddleware();
-    }
-
-    #[NoDiscard]
-    public static function withRequestQueryMiddleware(ContainerInterface $container): WithRequestQueryMiddleware
-    {
-        return new WithRequestQueryMiddleware();
+        return new ResourceWriter($resource);
     }
 }
