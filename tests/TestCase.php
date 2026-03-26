@@ -22,12 +22,12 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Random\Randomizer;
 use Src\Integration\ContainerManifest;
 use Src\Integration\MigrationManifest;
 use TomasChochola\Migrations\MigratorInterface;
 use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Container\Container;
+
 use function iterator_to_array;
 
 /**
@@ -70,6 +70,17 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
         $this->migrated = true;
     }
 
+    private function refresh(): void
+    {
+        $pdo = $this->container()->resolve(QueryInterface::class);
+        $database = $pdo->string('SELECT DATABASE()');
+
+        $pdo->run("DROP DATABASE IF EXISTS `{$database}`");
+        $pdo->run("CREATE DATABASE IF NOT EXISTS `{$database}` CHARACTER SET `utf8mb4` COLLATE `utf8mb4_0900_ai_ci`");
+
+        $this->container = null;
+    }
+
     #[Override]
     protected function tearDown(): void
     {
@@ -80,17 +91,6 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
         }
 
         $this->migrated = false;
-        $this->container = null;
-    }
-
-    private function refresh(): void
-    {
-        $pdo = $this->container()->resolve(QueryInterface::class);
-        $database = $pdo->string('SELECT DATABASE()');
-
-        $pdo->run("DROP DATABASE IF EXISTS `{$database}`");
-        $pdo->run("CREATE DATABASE IF NOT EXISTS `{$database}` CHARACTER SET `utf8mb4` COLLATE `utf8mb4_0900_ai_ci`");
-
         $this->container = null;
     }
 }

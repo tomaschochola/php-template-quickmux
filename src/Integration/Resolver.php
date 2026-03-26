@@ -27,8 +27,8 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Log\LoggerInterface;
-use TomasChochola\Migrations\Migrator;
 use TomasChochola\Migrations\MigrationsInterface;
+use TomasChochola\Migrations\Migrator;
 use TomasChochola\Migrations\Mysql\MysqlMigrations;
 use TomasChochola\Pdo\LockerInterface;
 use TomasChochola\Pdo\Mysql\MysqlFactory;
@@ -99,6 +99,9 @@ use TomasChochola\Psr\SimpleCache\ApcuSimpleCache;
 use TomasChochola\Psr\SimpleCache\NullSimpleCache;
 use UnexpectedValueException;
 
+use function fopen;
+use function is_resource;
+
 /**
  * @no-named-arguments
  */
@@ -136,50 +139,9 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function serverRequest(Container $container): ServerRequestInterface
-    {
-        $factory = $container->resolve(CgiServerRequestFactory::class);
-
-        return $factory->create();
-    }
-
-    #[NoDiscard]
     public static function collectingExporter(Container $container): CollectingExporter
     {
         return new CollectingExporter();
-    }
-
-    #[NoDiscard]
-    public static function exceptFilter(Container $container): ExceptFilter
-    {
-        return new ExceptFilter([]);
-    }
-
-    #[NoDiscard]
-    public static function filterCollectingExporter(Container $container): FilterExporter
-    {
-        $filter = $container->resolve(FilterInterface::class);
-        $exporter = $container->resolve(CollectingExporter::class);
-
-        return new FilterExporter($filter, $exporter);
-    }
-
-    #[NoDiscard]
-    public static function filterFormatterWriterExporter(Container $container): FilterExporter
-    {
-        $filter = $container->resolve(FilterInterface::class);
-        $exporter = $container->resolve(FormatterWriterExporter::class);
-
-        return new FilterExporter($filter, $exporter);
-    }
-
-    #[NoDiscard]
-    public static function mysqlMigrations(Container $container): MysqlMigrations
-    {
-        $query = $container->resolve(QueryInterface::class);
-        $logger = $container->resolve(LoggerInterface::class);
-
-        return new MysqlMigrations($query, $logger);
     }
 
     #[NoDiscard]
@@ -213,6 +175,12 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
+    public static function exceptFilter(Container $container): ExceptFilter
+    {
+        return new ExceptFilter([]);
+    }
+
+    #[NoDiscard]
     public static function exceptionCatcherMiddleware(Container $container): ExceptionCatcherMiddleware
     {
         $responseFactory = $container->resolve(ResponseFactoryInterface::class);
@@ -226,6 +194,24 @@ final readonly class Resolver
         $logger = $container->resolve(LoggerInterface::class);
 
         return new ExceptionLoggerMiddleware($logger);
+    }
+
+    #[NoDiscard]
+    public static function filterCollectingExporter(Container $container): FilterExporter
+    {
+        $filter = $container->resolve(FilterInterface::class);
+        $exporter = $container->resolve(CollectingExporter::class);
+
+        return new FilterExporter($filter, $exporter);
+    }
+
+    #[NoDiscard]
+    public static function filterFormatterWriterExporter(Container $container): FilterExporter
+    {
+        $filter = $container->resolve(FilterInterface::class);
+        $exporter = $container->resolve(FormatterWriterExporter::class);
+
+        return new FilterExporter($filter, $exporter);
     }
 
     #[NoDiscard]
@@ -291,6 +277,17 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
+    public static function migrator(Container $container): Migrator
+    {
+        $pdo = $container->resolve(QueryInterface::class);
+        $logger = $container->resolve(LoggerInterface::class);
+        $migrations = $container->resolve(MigrationsInterface::class);
+        $locker = $container->resolve(LockerInterface::class);
+
+        return new Migrator($pdo, $logger, $migrations, $locker);
+    }
+
+    #[NoDiscard]
     public static function mysql(Container $container): Mysql
     {
         $factory = $container->resolve(MysqlFactory::class);
@@ -314,67 +311,20 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
+    public static function mysqlMigrations(Container $container): MysqlMigrations
+    {
+        $query = $container->resolve(QueryInterface::class);
+        $logger = $container->resolve(LoggerInterface::class);
+
+        return new MysqlMigrations($query, $logger);
+    }
+
+    #[NoDiscard]
     public static function mysqlProbe(Container $container): MysqlProbe
     {
         $query = $container->resolve(QueryInterface::class);
 
         return new MysqlProbe($query);
-    }
-
-    #[NoDiscard]
-    public static function negativeCatcherMiddleware(Container $container): NegativeCatcherMiddleware
-    {
-        $responseFactory = $container->resolve(ResponseFactoryInterface::class);
-
-        return new NegativeCatcherMiddleware($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function noContentRequestHandler(Container $container): NoContentRequestHandler
-    {
-        $responseFactory = $container->resolve(ResponseFactoryInterface::class);
-
-        return new NoContentRequestHandler($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function notFoundRequestHandler(Container $container): NotFoundRequestHandler
-    {
-        $responseFactory = $container->resolve(ResponseFactoryInterface::class);
-
-        return new NotFoundRequestHandler($responseFactory);
-    }
-
-    #[NoDiscard]
-    public static function onlyFilter(Container $container): OnlyFilter
-    {
-        return new OnlyFilter(['notice', 'warning', 'error', 'critical', 'alert', 'emergency']);
-    }
-
-    #[NoDiscard]
-    public static function nowClock(Container $container): NowClock
-    {
-        return new NowClock();
-    }
-
-    #[NoDiscard]
-    public static function nullMiddleware(Container $container): NullMiddleware
-    {
-        return new NullMiddleware();
-    }
-
-    #[NoDiscard]
-    public static function nullSimpleCache(Container $container): NullSimpleCache
-    {
-        return new NullSimpleCache();
-    }
-
-    #[NoDiscard]
-    public static function okRequestHandler(Container $container): OkRequestHandler
-    {
-        $responseFactory = $container->resolve(ResponseFactoryInterface::class);
-
-        return new OkRequestHandler($responseFactory);
     }
 
     #[NoDiscard]
@@ -405,6 +355,62 @@ final readonly class Resolver
     public static function mysqlSettingsFactory(Container $container): MysqlSettingsFactory
     {
         return new MysqlSettingsFactory();
+    }
+
+    #[NoDiscard]
+    public static function negativeCatcherMiddleware(Container $container): NegativeCatcherMiddleware
+    {
+        $responseFactory = $container->resolve(ResponseFactoryInterface::class);
+
+        return new NegativeCatcherMiddleware($responseFactory);
+    }
+
+    #[NoDiscard]
+    public static function noContentRequestHandler(Container $container): NoContentRequestHandler
+    {
+        $responseFactory = $container->resolve(ResponseFactoryInterface::class);
+
+        return new NoContentRequestHandler($responseFactory);
+    }
+
+    #[NoDiscard]
+    public static function notFoundRequestHandler(Container $container): NotFoundRequestHandler
+    {
+        $responseFactory = $container->resolve(ResponseFactoryInterface::class);
+
+        return new NotFoundRequestHandler($responseFactory);
+    }
+
+    #[NoDiscard]
+    public static function nowClock(Container $container): NowClock
+    {
+        return new NowClock();
+    }
+
+    #[NoDiscard]
+    public static function nullMiddleware(Container $container): NullMiddleware
+    {
+        return new NullMiddleware();
+    }
+
+    #[NoDiscard]
+    public static function nullSimpleCache(Container $container): NullSimpleCache
+    {
+        return new NullSimpleCache();
+    }
+
+    #[NoDiscard]
+    public static function okRequestHandler(Container $container): OkRequestHandler
+    {
+        $responseFactory = $container->resolve(ResponseFactoryInterface::class);
+
+        return new OkRequestHandler($responseFactory);
+    }
+
+    #[NoDiscard]
+    public static function onlyFilter(Container $container): OnlyFilter
+    {
+        return new OnlyFilter(['notice', 'warning', 'error', 'critical', 'alert', 'emergency']);
     }
 
     #[NoDiscard]
@@ -481,6 +487,14 @@ final readonly class Resolver
         $resolver = $container->resolve(PipelineResolver::class);
 
         return new RouteRequestHandler($matcher, $resolver, $before, $after);
+    }
+
+    #[NoDiscard]
+    public static function serverRequest(Container $container): ServerRequestInterface
+    {
+        $factory = $container->resolve(CgiServerRequestFactory::class);
+
+        return $factory->create();
     }
 
     #[NoDiscard]
@@ -563,16 +577,5 @@ final readonly class Resolver
     public static function withRequestQueryMiddleware(Container $container): WithRequestQueryMiddleware
     {
         return new WithRequestQueryMiddleware();
-    }
-
-    #[NoDiscard]
-    public static function migrator(Container $container): Migrator
-    {
-        $pdo = $container->resolve(QueryInterface::class);
-        $logger = $container->resolve(LoggerInterface::class);
-        $migrations = $container->resolve(MigrationsInterface::class);
-        $locker = $container->resolve(LockerInterface::class);
-
-        return new Migrator($pdo, $logger, $migrations, $locker);
     }
 }

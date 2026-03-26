@@ -15,12 +15,10 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Small;
-use PHPUnit\Framework\Attributes\Test;
-use Src\Integration\ContainerManifest;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\Attributes\Small;
+use PHPUnit\Framework\Attributes\Test;
 
 use function uniqid;
 
@@ -40,18 +38,18 @@ final class SmokeTest extends TestCase
         self::assertSame(200, $response->getStatusCode());
     }
 
+    #[DoesNotPerformAssertions]
+    #[Test]
+    public function testMigrate(): void
+    {
+        $this->migrate();
+    }
+
     #[Test]
     public function testNotFound(): void
     {
         $response = $this->handle($this->createServerRequest('GET', '/' . uniqid('notfound')));
 
         self::assertSame(404, $response->getStatusCode());
-    }
-
-    #[DoesNotPerformAssertions]
-    #[Test]
-    public function testMigrate(): void
-    {
-        $this->migrate();
     }
 }

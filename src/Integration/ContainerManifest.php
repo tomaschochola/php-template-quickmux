@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Src\Integration;
 
-use EmptyIterator;
 use GlobIterator;
 use IteratorAggregate;
 use Override;
@@ -28,13 +27,12 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
-use Random\Randomizer;
 use TomasChochola\Loaders\EnvLoader;
 use TomasChochola\Loaders\IniLoader;
 use TomasChochola\Loaders\PhpLoader;
+use TomasChochola\Migrations\MigrationsInterface;
 use TomasChochola\Migrations\Migrator;
 use TomasChochola\Migrations\MigratorInterface;
-use TomasChochola\Migrations\MigrationsInterface;
 use TomasChochola\Migrations\Mysql\MysqlMigrations;
 use TomasChochola\Pdo\LockerInterface;
 use TomasChochola\Pdo\Mysql\MysqlFactory;
@@ -121,18 +119,6 @@ final readonly class ContainerManifest implements IteratorAggregate
 
             yield from new PhpLoader(new GlobIterator('./.phpunit.php'));
         }
-    }
-
-    /**
-     * @return iterable<mixed, mixed>
-     */
-    private static function routes(): iterable
-    {
-        $routes = new RouteLoader();
-
-        $routes->route(['GET'], '/healthz/live', [OkRequestHandler::class]);
-
-        return $routes;
     }
 
     /**
@@ -231,6 +217,18 @@ final readonly class ContainerManifest implements IteratorAggregate
     private static function local(): iterable
     {
         yield ThrowableCatcherMiddleware::class => new SingletonResolver([Resolver::class, 'nullMiddleware']);
+    }
+
+    /**
+     * @return iterable<mixed, mixed>
+     */
+    private static function routes(): iterable
+    {
+        $routes = new RouteLoader();
+
+        $routes->route(['GET'], '/healthz/live', [OkRequestHandler::class]);
+
+        return $routes;
     }
 
     /**
