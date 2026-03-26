@@ -28,6 +28,7 @@ use TomasChochola\Migrations\MigratorInterface;
 use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Container\Container;
 
+use function assert;
 use function iterator_to_array;
 
 /**
@@ -54,25 +55,41 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
      */
     protected function createServerRequest(string $method, UriInterface|string $uri, array $params = []): ServerRequestInterface
     {
-        return $this->container()->resolve(ServerRequestFactoryInterface::class)->createServerRequest($method, $uri, $params);
+        return $this->resolve(ServerRequestFactoryInterface::class)->createServerRequest($method, $uri, $params);
     }
 
     protected function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->container()->resolve(RequestHandlerInterface::class)->handle($request);
+        return $this->resolve(RequestHandlerInterface::class)->handle($request);
     }
 
     protected function migrate(): void
     {
         $this->refresh();
-        $this->container()->resolve(MigratorInterface::class)->migrate(new MigrationManifest());
+        $this->resolve(MigratorInterface::class)->migrate(new MigrationManifest());
 
         $this->migrated = true;
     }
 
+    /**
+     * @template T of object
+     *
+     * @param class-string<T> $id
+     *
+     * @return T
+     */
+    protected function resolve(string $id): object
+    {
+        $resolved = $this->container()->get($id);
+
+        assert($resolved instanceof $id);
+
+        return $resolved;
+    }
+
     private function refresh(): void
     {
-        $pdo = $this->container()->resolve(QueryInterface::class);
+        $pdo = $this->resolve(QueryInterface::class);
         $database = $pdo->string('SELECT DATABASE()');
 
         $pdo->run("DROP DATABASE IF EXISTS `{$database}`");

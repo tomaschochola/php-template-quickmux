@@ -26,8 +26,12 @@ use TomasChochola\Psr\SimpleCache\SimpleCaches;
 
 $container = new Container(CONTAINER_CACHE::current() ? SimpleCaches::remember(new ApcuSimpleCache(), __FILE__, static fn(): array => \iterator_to_array(new ContainerManifest())) : \iterator_to_array(new ContainerManifest()));
 
-$emitter = $container->resolve(ResponseEmitter::class);
-$handler = $container->resolve(RequestHandlerInterface::class);
-$request = $container->resolve(ServerRequestInterface::class);
+$emitter = $container->get(ResponseEmitter::class);
+$handler = $container->get(RequestHandlerInterface::class);
+$request = $container->get(ServerRequestInterface::class);
+
+\assert($emitter instanceof ResponseEmitter);
+\assert($handler instanceof RequestHandlerInterface);
+\assert($request instanceof ServerRequestInterface);
 
 $emitter->emit($handler->handle($request));

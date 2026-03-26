@@ -22,4 +22,8 @@ use TomasChochola\Psr\Container\Container;
 
 $container = new Container(\iterator_to_array(new ContainerManifest()));
 
-$container->resolve(MigratorInterface::class)->migrate(new MigrationManifest());
+$migrator = $container->get(MigratorInterface::class);
+
+\assert($migrator instanceof MigratorInterface);
+
+$migrator->migrate(new MigrationManifest());
