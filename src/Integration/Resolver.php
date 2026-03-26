@@ -102,7 +102,6 @@ use UnexpectedValueException;
 use function assert;
 use function fopen;
 use function is_resource;
-use function is_string;
 
 /**
  * @no-named-arguments
@@ -137,7 +136,6 @@ final readonly class Resolver
     {
         $factory = $container->get(ServerRequestFactoryInterface::class);
 
-
         assert($factory instanceof ServerRequestFactoryInterface);
 
         return new CgiServerRequestFactory($factory);
@@ -154,7 +152,6 @@ final readonly class Resolver
     {
         $responseFactory = $container->get(ResponseFactoryInterface::class);
 
-
         assert($responseFactory instanceof ResponseFactoryInterface);
 
         return new CurlClient($responseFactory);
@@ -165,7 +162,6 @@ final readonly class Resolver
     {
         $responseFactory = $container->get(ResponseFactoryInterface::class);
 
-
         assert($responseFactory instanceof ResponseFactoryInterface);
 
         return new ErrorCatcherMiddleware($responseFactory);
@@ -175,7 +171,6 @@ final readonly class Resolver
     public static function errorLoggerMiddleware(ContainerInterface $container): ErrorLoggerMiddleware
     {
         $logger = $container->get(LoggerInterface::class);
-
 
         assert($logger instanceof LoggerInterface);
 
