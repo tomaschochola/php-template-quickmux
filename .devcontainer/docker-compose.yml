@@ -8,14 +8,25 @@ services:
       dockerfile: './Dockerfile'
       target: 'devcontainer'
     command: 'sleep infinity'
+    depends_on:
+      mysql:
+        condition: 'service_healthy'
+      nginx:
+        condition: 'service_healthy'
+      php:
+        condition: 'service_healthy'
+      valkey:
+        condition: 'service_healthy'
     environment:
       APP_ENV: 'local'
       COMPOSER_CACHE_DIR: '/home/devcontainer/.composer'
       MYSQL_DATABASE: 'db'
+      MYSQL_UNIT_DATABASE: 'db_unit'
       MYSQL_HOST: 'mysql'
       MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
       MYSQL_ROOT_PASSWORD_FILE: '/run/secrets/db_root_password'
       MYSQL_USER: 'db'
+      MYSQL_ROOT_USER: 'root'
       NODE_ENV: 'development'
       npm_config_cache: '/home/devcontainer/.npm'
     networks:
@@ -27,7 +38,7 @@ services:
     secrets:
       - 'db_password'
       - 'db_root_password'
-    user: 'devcontainer:devcontainer'
+    user: 'devcontainer'
     volumes:
       - './:/var/www/html'
       - 'global_composer_cache:/home/devcontainer/.composer'

@@ -2,4 +2,6 @@
 
 set -e
 
+php ./bin/migrate.php
+
 exec "$@"

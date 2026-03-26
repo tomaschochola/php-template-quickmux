@@ -1,12 +1,10 @@
 # syntax=docker/dockerfile:1
 
-ARG PHP_VERSION=8.5-fpm-trixie
-ARG NGINX_VERSION=1-trixie
-ARG COMPOSER_VERSION=2
-
-FROM composer:${COMPOSER_VERSION} AS versionedcomposer
-FROM php:${PHP_VERSION} AS versionedphp
-FROM nginxinc/nginx-unprivileged:${NGINX_VERSION} AS versionednginx
+FROM composer:2 AS versionedcomposer
+FROM php:8.5-fpm-trixie AS versionedphp
+FROM nginxinc/nginx-unprivileged:1-trixie AS versionednginx
+FROM mysql:8-oracle AS versionedmysql
+FROM valkey/valkey:9-trixie AS versionedvalkey
 
 FROM versionedphp AS base
 WORKDIR /var/www/html
@@ -63,7 +61,7 @@ EOF
 COPY ./ops/php/z.ini /usr/local/etc/php/conf.d/z.ini
 COPY ./ops/php/zz.ini /usr/local/etc/php/conf.d/zz.ini
 COPY ./ops/php/zzz.ini /usr/local/etc/php/conf.d/zzz.ini
-USER devcontainer:devcontainer
+USER devcontainer
 
 FROM versionedcomposer AS vendor
 COPY ./composer* ./
@@ -77,6 +75,7 @@ COPY --from=vendor /app/composer* ./
 COPY --from=vendor /app/vendor ./vendor
 COPY ./index.php ./index.php
 COPY ./src ./src
+COPY ./bin ./bin
 RUN <<EOF
   set -euo pipefail
   composer dump-autoload --no-ansi --no-interaction --no-plugins --no-scripts --no-dev --classmap-authoritative --strict-psr --strict-ambiguous
@@ -93,3 +92,12 @@ FROM versionednginx AS nginx
 WORKDIR /var/www/html
 COPY ./ops/nginx /etc/nginx
 COPY ./public ./
+RUN <<EOF
+	set -euo pipefail
+	openssl req -x509 -newkey rsa:4096 -nodes -sha256 -keyout /etc/nginx/snakeoil.key -out /etc/nginx/snakeoil.pem -days 3650 -subj "/CN=localhost" -addext "subjectAltName=DNS:*.localhost,DNS:localhost"
+EOF
+
+FROM versionedmysql AS mysql
+COPY ./ops/mysql /docker-entrypoint-initdb.d
+
+FROM versionedvalkey AS valkey

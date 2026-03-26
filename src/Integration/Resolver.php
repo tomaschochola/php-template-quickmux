@@ -22,17 +22,23 @@ use Pdo\Mysql;
 use Psr\Clock\ClockInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Log\LoggerInterface;
-use TomasChochola\Pdo\Mysql\CreateMigrationsTableMigration;
+use TomasChochola\Migrations\Migrator;
+use TomasChochola\Migrations\MigrationsInterface;
+use TomasChochola\Migrations\Mysql\MysqlMigrations;
+use TomasChochola\Pdo\LockerInterface;
 use TomasChochola\Pdo\Mysql\MysqlFactory;
+use TomasChochola\Pdo\Mysql\MysqlLocker;
 use TomasChochola\Pdo\Mysql\MysqlProbe;
-use TomasChochola\Pdo\PdoQuery;
-use TomasChochola\Pdo\PdoSettings;
-use TomasChochola\Pdo\PdoSettingsFactory;
-use TomasChochola\Pdo\PdoSettingsInterface;
+use TomasChochola\Pdo\Mysql\MysqlQuery;
+use TomasChochola\Pdo\Mysql\MysqlSettings;
+use TomasChochola\Pdo\Mysql\MysqlSettingsFactory;
+use TomasChochola\Pdo\Mysql\MysqlSettingsInterface;
+use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Clock\FixedClock;
 use TomasChochola\Psr\Clock\NowClock;
 use TomasChochola\Psr\Container\Container;
@@ -74,19 +80,24 @@ use TomasChochola\Psr\Http\RequestHandlers\WithRequestHeadersMiddleware;
 use TomasChochola\Psr\Http\RequestHandlers\WithRequestJsonMiddleware;
 use TomasChochola\Psr\Http\RequestHandlers\WithRequestQueryMiddleware;
 use TomasChochola\Psr\Log\CollectingExporter;
+use TomasChochola\Psr\Log\ExceptFilter;
 use TomasChochola\Psr\Log\ExporterInterface;
+use TomasChochola\Psr\Log\FilterExporter;
+use TomasChochola\Psr\Log\FilterInterface;
 use TomasChochola\Psr\Log\FormatterInterface;
 use TomasChochola\Psr\Log\FormatterWriterExporter;
 use TomasChochola\Psr\Log\Interpolator;
 use TomasChochola\Psr\Log\InterpolatorInterface;
 use TomasChochola\Psr\Log\JsonFormatter;
 use TomasChochola\Psr\Log\Logger;
+use TomasChochola\Psr\Log\OnlyFilter;
 use TomasChochola\Psr\Log\Recorder;
 use TomasChochola\Psr\Log\RecorderInterface;
 use TomasChochola\Psr\Log\ResourceWriter;
 use TomasChochola\Psr\Log\WriterInterface;
 use TomasChochola\Psr\SimpleCache\ApcuSimpleCache;
 use TomasChochola\Psr\SimpleCache\NullSimpleCache;
+use UnexpectedValueException;
 
 /**
  * @no-named-arguments
@@ -125,15 +136,50 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
+    public static function serverRequest(Container $container): ServerRequestInterface
+    {
+        $factory = $container->resolve(CgiServerRequestFactory::class);
+
+        return $factory->create();
+    }
+
+    #[NoDiscard]
     public static function collectingExporter(Container $container): CollectingExporter
     {
         return new CollectingExporter();
     }
 
     #[NoDiscard]
-    public static function createMigrationsTableMigration(Container $container): CreateMigrationsTableMigration
+    public static function exceptFilter(Container $container): ExceptFilter
     {
-        return new CreateMigrationsTableMigration();
+        return new ExceptFilter([]);
+    }
+
+    #[NoDiscard]
+    public static function filterCollectingExporter(Container $container): FilterExporter
+    {
+        $filter = $container->resolve(FilterInterface::class);
+        $exporter = $container->resolve(CollectingExporter::class);
+
+        return new FilterExporter($filter, $exporter);
+    }
+
+    #[NoDiscard]
+    public static function filterFormatterWriterExporter(Container $container): FilterExporter
+    {
+        $filter = $container->resolve(FilterInterface::class);
+        $exporter = $container->resolve(FormatterWriterExporter::class);
+
+        return new FilterExporter($filter, $exporter);
+    }
+
+    #[NoDiscard]
+    public static function mysqlMigrations(Container $container): MysqlMigrations
+    {
+        $query = $container->resolve(QueryInterface::class);
+        $logger = $container->resolve(LoggerInterface::class);
+
+        return new MysqlMigrations($query, $logger);
     }
 
     #[NoDiscard]
@@ -248,7 +294,7 @@ final readonly class Resolver
     public static function mysql(Container $container): Mysql
     {
         $factory = $container->resolve(MysqlFactory::class);
-        $settings = $container->resolve(PdoSettingsInterface::class);
+        $settings = $container->resolve(MysqlSettingsInterface::class);
 
         return $factory->create($settings);
     }
@@ -260,9 +306,17 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
+    public static function mysqlLocker(Container $container): MysqlLocker
+    {
+        $query = $container->resolve(QueryInterface::class);
+
+        return new MysqlLocker($query);
+    }
+
+    #[NoDiscard]
     public static function mysqlProbe(Container $container): MysqlProbe
     {
-        $query = $container->resolve(PdoQuery::class);
+        $query = $container->resolve(QueryInterface::class);
 
         return new MysqlProbe($query);
     }
@@ -292,6 +346,12 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
+    public static function onlyFilter(Container $container): OnlyFilter
+    {
+        return new OnlyFilter(['notice', 'warning', 'error', 'critical', 'alert', 'emergency']);
+    }
+
+    #[NoDiscard]
     public static function nowClock(Container $container): NowClock
     {
         return new NowClock();
@@ -318,17 +378,17 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function pdoQuery(Container $container): PdoQuery
+    public static function mysqlQuery(Container $container): MysqlQuery
     {
         $pdo = $container->resolve(PDO::class);
 
-        return new PdoQuery($pdo);
+        return new MysqlQuery($pdo);
     }
 
     #[NoDiscard]
-    public static function pdoSettings(Container $container): PdoSettings
+    public static function mysqlSettings(Container $container): MysqlSettings
     {
-        $factory = $container->resolve(PdoSettingsFactory::class);
+        $factory = $container->resolve(MysqlSettingsFactory::class);
 
         return $factory->createFrom([
             'host' => $container->get('MYSQL_HOST'),
@@ -342,9 +402,9 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function pdoSettingsFactory(Container $container): PdoSettingsFactory
+    public static function mysqlSettingsFactory(Container $container): MysqlSettingsFactory
     {
-        return new PdoSettingsFactory();
+        return new MysqlSettingsFactory();
     }
 
     #[NoDiscard]
@@ -381,7 +441,13 @@ final readonly class Resolver
     #[NoDiscard]
     public static function resourceWriter(Container $container): ResourceWriter
     {
-        return new ResourceWriter();
+        $resource = fopen('php://stderr', 'w');
+
+        if (!is_resource($resource)) {
+            throw new UnexpectedValueException('fopen');
+        }
+
+        return new ResourceWriter($resource);
     }
 
     #[NoDiscard]
@@ -497,5 +563,16 @@ final readonly class Resolver
     public static function withRequestQueryMiddleware(Container $container): WithRequestQueryMiddleware
     {
         return new WithRequestQueryMiddleware();
+    }
+
+    #[NoDiscard]
+    public static function migrator(Container $container): Migrator
+    {
+        $pdo = $container->resolve(QueryInterface::class);
+        $logger = $container->resolve(LoggerInterface::class);
+        $migrations = $container->resolve(MigrationsInterface::class);
+        $locker = $container->resolve(LockerInterface::class);
+
+        return new Migrator($pdo, $logger, $migrations, $locker);
     }
 }

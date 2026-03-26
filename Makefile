@@ -123,11 +123,15 @@ update_composer: ./composer.json
 	composer dump-autoload --no-ansi --no-interaction --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
 
 .PHONY: postcreate
-postcreate: install
+postcreate: install migrate
 
 .PHONY: start serve server dev
 start serve server dev: ./vendor ./index.php ./composer.json ./composer.lock
 	php -S 0.0.0.0:8000 ./index.php
+
+.PHONY: migrate
+migrate: ./vendor ./bin/migrate.php ./composer.json ./composer.lock
+	php ./bin/migrate.php
 
 .PHONY: image
 image:

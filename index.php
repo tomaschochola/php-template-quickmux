@@ -15,6 +15,19 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Src\Main;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Src\Integration\CONTAINER_CACHE;
+use Src\Integration\ContainerManifest;
+use TomasChochola\Psr\Container\Container;
+use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitter;
+use TomasChochola\Psr\SimpleCache\ApcuSimpleCache;
+use TomasChochola\Psr\SimpleCache\SimpleCaches;
 
-new Main()();
+$container = new Container(CONTAINER_CACHE::current() ? SimpleCaches::remember(new ApcuSimpleCache(), __FILE__, static fn(): array => \iterator_to_array(new ContainerManifest())) : \iterator_to_array(new ContainerManifest()));
+
+$emitter = $container->resolve(ResponseEmitter::class);
+$handler = $container->resolve(RequestHandlerInterface::class);
+$request = $container->resolve(ServerRequestInterface::class);
+
+$emitter->emit($handler->handle($request));

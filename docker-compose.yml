@@ -14,10 +14,12 @@ secrets:
     file: './ops/secret'
 services:
   mysql:
+    build:
+      context: './'
+      dockerfile: './Dockerfile'
+      target: 'mysql'
     cap_drop:
       - 'ALL'
-    command:
-      - '--log-error-suppression-list="MY-013360"'
     environment:
       MYSQL_DATABASE: 'db'
       MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
@@ -28,11 +30,9 @@ services:
       retries: 3
       start_period: '30s'
       test:
-        - 'CMD'
-        - 'mysqladmin'
-        - 'ping'
+        - 'CMD-SHELL'
+        - 'MYSQL_PWD="$(cat "$${MYSQL_ROOT_PASSWORD_FILE}")" mysql -uroot ready -e "SELECT 1" || exit 1'
       timeout: '5s'
-    image: 'mysql:8-oracle'
     logging:
       driver: 'json-file'
       options:
@@ -54,7 +54,7 @@ services:
       nofile:
         hard: 1048576
         soft: 1048576
-    user: 'mysql:mysql'
+    user: 'mysql'
     volumes:
       - target: '/tmp'
         tmpfs:
@@ -83,7 +83,7 @@ services:
       start_period: '30s'
       test:
         - 'CMD-SHELL'
-        - 'curl -fsSLhttp://localhost:8080/nginx_ping | grep -q pong || exit 1'
+        - 'curl -fsSL http://localhost:8080/nginx_ping | grep -q pong || exit 1'
       timeout: '5s'
     logging:
       driver: 'json-file'
@@ -109,7 +109,7 @@ services:
       nofile:
         hard: 1048576
         soft: 1048576
-    user: 'nginx:nginx'
+    user: 'nginx'
     volumes:
       - target: '/tmp'
         tmpfs:
@@ -179,6 +179,10 @@ services:
           mode: 01777
         type: 'tmpfs'
   valkey:
+    build:
+      context: './'
+      dockerfile: './Dockerfile'
+      target: 'valkey'
     cap_drop:
       - 'ALL'
     healthcheck:
@@ -190,7 +194,6 @@ services:
         - 'valkey-cli'
         - 'ping'
       timeout: '5s'
-    image: 'valkey/valkey:9-trixie'
     logging:
       driver: 'json-file'
       options:
@@ -209,7 +212,7 @@ services:
       nofile:
         hard: 1048576
         soft: 1048576
-    user: 'valkey:valkey'
+    user: 'valkey'
     volumes:
       - target: '/tmp'
         tmpfs:

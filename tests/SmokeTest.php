@@ -19,6 +19,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 use Src\Integration\ContainerManifest;
+use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 use function uniqid;
 
@@ -26,7 +28,7 @@ use function uniqid;
  * @internal
  * @no-named-arguments
  */
-#[CoversClass(ContainerManifest::class)]
+#[CoversNothing]
 #[Small]
 final class SmokeTest extends TestCase
 {
@@ -44,5 +46,12 @@ final class SmokeTest extends TestCase
         $response = $this->handle($this->createServerRequest('GET', '/' . uniqid('notfound')));
 
         self::assertSame(404, $response->getStatusCode());
+    }
+
+    #[DoesNotPerformAssertions]
+    #[Test]
+    public function testMigrate(): void
+    {
+        $this->migrate();
     }
 }
