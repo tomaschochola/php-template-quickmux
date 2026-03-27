@@ -33,12 +33,12 @@ use TomasChochola\Migrations\Migrator;
 use TomasChochola\Migrations\MigratorInterface;
 use TomasChochola\Migrations\Mysql\MysqlMigrations;
 use TomasChochola\Pdo\LockerInterface;
-use TomasChochola\Pdo\ProbeInterface;
 use TomasChochola\Pdo\Mysql\MysqlFactory;
 use TomasChochola\Pdo\Mysql\MysqlLocker;
 use TomasChochola\Pdo\Mysql\MysqlProbe;
 use TomasChochola\Pdo\Mysql\MysqlQuery;
 use TomasChochola\Pdo\Mysql\MysqlSettingsFactory;
+use TomasChochola\Pdo\ProbeInterface;
 use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Clock\NowClock;
 use TomasChochola\Psr\Http\Factory\CgiServerRequestFactory;
@@ -128,10 +128,7 @@ final readonly class Resolver
         assert($formatter instanceof FormatterInterface);
         assert($writer instanceof WriterInterface);
 
-        return new FilterExporter(
-            $filter,
-            new FormatterWriterExporter($formatter, $writer),
-        );
+        return new FilterExporter($filter, new FormatterWriterExporter($formatter, $writer));
     }
 
     #[NoDiscard]
@@ -245,17 +242,15 @@ final readonly class Resolver
     #[NoDiscard]
     public static function QueryInterface(ContainerInterface $container): QueryInterface
     {
-        $pdo = (new MysqlFactory())->create(
-            (new MysqlSettingsFactory())->createFrom([
-                'host' => $container->get('MYSQL_HOST'),
-                'port' => '',
-                'dbname' => $container->get('MYSQL_DATABASE'),
-                'socket' => '',
-                'username' => $container->get('MYSQL_USER'),
-                'password' => $container->get('MYSQL_PASSWORD_FILE'),
-                'options' => [],
-            ]),
-        );
+        $pdo = (new MysqlFactory())->create((new MysqlSettingsFactory())->createFrom([
+            'host' => $container->get('MYSQL_HOST'),
+            'port' => '',
+            'dbname' => $container->get('MYSQL_DATABASE'),
+            'socket' => '',
+            'username' => $container->get('MYSQL_USER'),
+            'password' => $container->get('MYSQL_PASSWORD_FILE'),
+            'options' => [],
+        ]));
 
         assert($pdo instanceof Mysql);
 
