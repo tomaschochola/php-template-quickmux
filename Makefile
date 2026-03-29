@@ -161,7 +161,7 @@ secret:
 devcontainer:
 	devcontainer up
 	devcontainer exec /bin/bash
-	docker compose -f ./docker-compose.yml -f ./.devcontainer/docker-compose.yml down --remove-orphans
+	docker compose -f ./docker-compose.yml -f ./docker-compose-devcontainer.yml down --remove-orphans
 
 # Dependencies
 ./.phpunit.coverage/html:
