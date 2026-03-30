@@ -17,7 +17,6 @@ namespace Src\Integration;
 
 use LogicException;
 use NoDiscard;
-use Pdo\Mysql;
 use Psr\Clock\ClockInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -251,8 +250,6 @@ final readonly class Resolver
             'password' => $container->get('MYSQL_PASSWORD_FILE'),
             'options' => [],
         ]));
-
-        assert($pdo instanceof Mysql);
 
         return new MysqlQuery($pdo);
     }
