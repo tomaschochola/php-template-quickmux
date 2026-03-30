@@ -45,19 +45,10 @@ use TomasChochola\Psr\Http\Factory\ResponseFactory;
 use TomasChochola\Psr\Http\Factory\ServerRequestFactory;
 use TomasChochola\Psr\Http\Factory\StreamFactory;
 use TomasChochola\Psr\Http\Factory\UriFactory;
-use TomasChochola\Psr\Http\RequestHandlers\AfterPipeline;
-use TomasChochola\Psr\Http\RequestHandlers\AfterPipelineInterface;
-use TomasChochola\Psr\Http\RequestHandlers\BeforePipeline;
-use TomasChochola\Psr\Http\RequestHandlers\BeforePipelineInterface;
-use TomasChochola\Psr\Http\RequestHandlers\ErrorRaiserMiddleware;
 use TomasChochola\Psr\Http\RequestHandlers\NotFoundRequestHandler;
 use TomasChochola\Psr\Http\RequestHandlers\OkRequestHandler;
-use TomasChochola\Psr\Http\RequestHandlers\PipelineResolver;
-use TomasChochola\Psr\Http\RequestHandlers\PipelineResolverInterface;
 use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitter;
 use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitterInterface;
-use TomasChochola\Psr\Http\RequestHandlers\RouteMatcher;
-use TomasChochola\Psr\Http\RequestHandlers\RouteMatcherInterface;
 use TomasChochola\Psr\Http\RequestHandlers\RouteRequestHandler;
 use TomasChochola\Psr\Http\RequestHandlers\RouteSettingsInterface;
 use TomasChochola\Psr\Http\RequestHandlers\ThrowableCatcherMiddleware;
@@ -93,27 +84,9 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function AfterPipelineInterface(ContainerInterface $container): AfterPipelineInterface
-    {
-        return new AfterPipeline();
-    }
-
-    #[NoDiscard]
-    public static function BeforePipelineInterface(ContainerInterface $container): BeforePipelineInterface
-    {
-        return new BeforePipeline();
-    }
-
-    #[NoDiscard]
     public static function ClockInterface(ContainerInterface $container): ClockInterface
     {
         return new NowClock();
-    }
-
-    #[NoDiscard]
-    public static function ErrorRaiserMiddleware(ContainerInterface $container): MiddlewareInterface
-    {
-        return new ErrorRaiserMiddleware();
     }
 
     #[NoDiscard]
@@ -223,12 +196,6 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function PipelineResolverInterface(ContainerInterface $container): PipelineResolverInterface
-    {
-        return new PipelineResolver($container);
-    }
-
-    #[NoDiscard]
     public static function ProbeInterface(ContainerInterface $container): ProbeInterface
     {
         $query = $container->get(QueryInterface::class);
@@ -281,29 +248,13 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function RouteMatcherInterface(ContainerInterface $container): RouteMatcherInterface
+    public static function RouteRequestHandler(ContainerInterface $container): RequestHandlerInterface
     {
         $settings = $container->get(RouteSettingsInterface::class);
 
         assert($settings instanceof RouteSettingsInterface);
 
-        return new RouteMatcher($settings);
-    }
-
-    #[NoDiscard]
-    public static function RouteRequestHandler(ContainerInterface $container): RequestHandlerInterface
-    {
-        $after = $container->get(AfterPipelineInterface::class);
-        $before = $container->get(BeforePipelineInterface::class);
-        $matcher = $container->get(RouteMatcherInterface::class);
-        $resolver = $container->get(PipelineResolverInterface::class);
-
-        assert($after instanceof AfterPipelineInterface);
-        assert($before instanceof BeforePipelineInterface);
-        assert($matcher instanceof RouteMatcherInterface);
-        assert($resolver instanceof PipelineResolverInterface);
-
-        return new RouteRequestHandler($matcher, $resolver, $before, $after);
+        return new RouteRequestHandler($settings, $container);
     }
 
     #[NoDiscard]

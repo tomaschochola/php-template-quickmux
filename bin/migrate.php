@@ -13,6 +13,10 @@
 
 declare(strict_types=1);
 
+\set_error_handler(static function (int $severity, string $message, string $file, int $line): never {
+    throw new ErrorException($message, 0, $severity, $file, $line);
+});
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Src\Integration\ContainerManifest;

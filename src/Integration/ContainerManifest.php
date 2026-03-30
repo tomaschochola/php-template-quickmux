@@ -37,16 +37,11 @@ use TomasChochola\Pdo\ProbeInterface;
 use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Clock\FixedClock;
 use TomasChochola\Psr\Container\SingletonResolver;
-use TomasChochola\Psr\Http\RequestHandlers\AfterPipelineInterface;
-use TomasChochola\Psr\Http\RequestHandlers\BeforePipelineInterface;
-use TomasChochola\Psr\Http\RequestHandlers\ErrorRaiserMiddleware;
 use TomasChochola\Psr\Http\RequestHandlers\NotFoundRequestHandler;
 use TomasChochola\Psr\Http\RequestHandlers\NullMiddleware;
 use TomasChochola\Psr\Http\RequestHandlers\OkRequestHandler;
-use TomasChochola\Psr\Http\RequestHandlers\PipelineResolverInterface;
 use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitterInterface;
 use TomasChochola\Psr\Http\RequestHandlers\RouteLoader;
-use TomasChochola\Psr\Http\RequestHandlers\RouteMatcherInterface;
 use TomasChochola\Psr\Http\RequestHandlers\ThrowableCatcherMiddleware;
 use TomasChochola\Psr\Http\RequestHandlers\ThrowableLoggerMiddleware;
 use TomasChochola\Psr\Log\ExporterInterface;
@@ -125,14 +120,6 @@ final readonly class ContainerManifest implements IteratorAggregate
 
         yield RequestHandlerInterface::class => new SingletonResolver([Resolver::class, 'RouteRequestHandler']);
 
-        yield AfterPipelineInterface::class => new SingletonResolver([Resolver::class, 'AfterPipelineInterface']);
-
-        yield BeforePipelineInterface::class => new SingletonResolver([Resolver::class, 'BeforePipelineInterface']);
-
-        yield RouteMatcherInterface::class => new SingletonResolver([Resolver::class, 'RouteMatcherInterface']);
-
-        yield PipelineResolverInterface::class => new SingletonResolver([Resolver::class, 'PipelineResolverInterface']);
-
         yield ThrowableCatcherMiddleware::class => new SingletonResolver([Resolver::class, 'ThrowableCatcherMiddleware']);
 
         yield ResponseFactoryInterface::class => new SingletonResolver([Resolver::class, 'ResponseFactoryInterface']);
@@ -154,8 +141,6 @@ final readonly class ContainerManifest implements IteratorAggregate
         yield RecorderInterface::class => new SingletonResolver([Resolver::class, 'RecorderInterface']);
 
         yield ClockInterface::class => new SingletonResolver([Resolver::class, 'ClockInterface']);
-
-        yield ErrorRaiserMiddleware::class => new SingletonResolver([Resolver::class, 'ErrorRaiserMiddleware']);
 
         yield NotFoundRequestHandler::class => new SingletonResolver([Resolver::class, 'NotFoundRequestHandler']);
 
@@ -191,7 +176,10 @@ final readonly class ContainerManifest implements IteratorAggregate
     {
         $routes = new RouteLoader();
 
-        $routes->route(['GET'], '/healthz/live', [OkRequestHandler::class]);
+        $global = [ThrowableCatcherMiddleware::class, ThrowableLoggerMiddleware::class];
+
+        $routes->route(['GET'], '/healthz/live', [...$global, OkRequestHandler::class]);
+        $routes->route(['*'], '*', [NotFoundRequestHandler::class]);
 
         return $routes;
     }
