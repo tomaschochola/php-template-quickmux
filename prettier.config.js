@@ -10,9 +10,9 @@
  * @see {@link https://github.com/sponsors/tomaschochola} GitHub Sponsors
  */
 
-import { PrettierStack } from '@tomaschochola/prettier-stack';
+import { Prettier } from '@tomaschochola/tooling-prettier';
 
 // eslint-disable-next-line no-restricted-exports
-export default new PrettierStack()
+export default new Prettier()
   .xml()
   .build();

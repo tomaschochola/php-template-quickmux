@@ -50,12 +50,12 @@
     {
       "no-api": true,
       "type": "git",
-      "url": "https://github.com/tomaschochola/phpstan-stack.git"
+      "url": "https://github.com/tomaschochola/tooling-phpstan.git"
     },
     {
       "no-api": true,
       "type": "git",
-      "url": "https://github.com/tomaschochola/php-cs-fixer-stack.git"
+      "url": "https://github.com/tomaschochola/tooling-php-cs-fixer.git"
     },
     {
       "no-api": true,
@@ -154,8 +154,8 @@
     "ext-zip": "*",
     "phpunit/phpunit": "^12.5",
     "roave/security-advisories": "dev-latest",
-    "tomaschochola/php-cs-fixer-stack": "^1.0@dev",
-    "tomaschochola/phpstan-stack": "^1.0@dev"
+    "tomaschochola/tooling-php-cs-fixer": "^1.0@dev",
+    "tomaschochola/tooling-phpstan": "^1.0@dev"
   },
   "support": {
     "docs": "https://github.com/tomaschochola/php-template-quickmux",
