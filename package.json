@@ -17,8 +17,8 @@
   ],
   "description": "@tomaschochola/php-template-quickmux",
   "devDependencies": {
-    "@tomaschochola/ts-tooling-eslint-config": "github:tomaschochola/ts-tooling-eslint-config#1.x",
-    "@tomaschochola/ts-tooling-prettier-config": "github:tomaschochola/ts-tooling-prettier-config#1.x"
+    "@tomaschochola/eslint-stack": "github:tomaschochola/eslint-stack#1.x",
+    "@tomaschochola/prettier-stack": "github:tomaschochola/prettier-stack#1.x"
   },
   "funding": {
     "type": "github",
