@@ -26,24 +26,24 @@
     "process-timeout": 0,
     "sort-packages": true
   },
-  "description": "tomaschochola/php-template-quickmux",
+  "description": "tomaschochola/template-php-quickmux",
   "funding": [
     {
       "type": "github",
       "url": "https://github.com/sponsors/tomaschochola"
     }
   ],
-  "homepage": "https://github.com/tomaschochola/php-template-quickmux",
+  "homepage": "https://github.com/tomaschochola/template-php-quickmux",
   "keywords": [
     "tomaschochola",
     "TomasChochola",
     "Tomas Chochola",
     "Tomáš Chochola",
-    "php-template-quickmux"
+    "template-php-quickmux"
   ],
   "license": "CC-BY-ND-4.0",
   "minimum-stability": "dev",
-  "name": "tomaschochola/php-template-quickmux",
+  "name": "tomaschochola/template-php-quickmux",
   "prefer-stable": true,
   "readme": "./README.md",
   "repositories": [
@@ -158,10 +158,10 @@
     "tomaschochola/tooling-phpstan": "^1.0@dev"
   },
   "support": {
-    "docs": "https://github.com/tomaschochola/php-template-quickmux",
+    "docs": "https://github.com/tomaschochola/template-php-quickmux",
     "email": "tomaschochola@tomaschochola.cz",
-    "issues": "https://github.com/tomaschochola/php-template-quickmux/issues",
-    "source": "https://github.com/tomaschochola/php-template-quickmux.git"
+    "issues": "https://github.com/tomaschochola/template-php-quickmux/issues",
+    "source": "https://github.com/tomaschochola/template-php-quickmux.git"
   },
   "type": "project"
 }

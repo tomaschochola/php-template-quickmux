@@ -6,7 +6,7 @@
   },
   "bugs": {
     "email": "tomaschochola@tomaschochola.cz",
-    "url": "https://github.com/tomaschochola/php-template-quickmux/issues"
+    "url": "https://github.com/tomaschochola/template-php-quickmux/issues"
   },
   "contributors": [
     {
@@ -15,7 +15,7 @@
       "url": "https://github.com/tomaschochola"
     }
   ],
-  "description": "@tomaschochola/php-template-quickmux",
+  "description": "@tomaschochola/template-php-quickmux",
   "devDependencies": {
     "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#1.x",
     "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#1.x"
@@ -24,17 +24,17 @@
     "type": "github",
     "url": "https://github.com/sponsors/tomaschochola"
   },
-  "homepage": "https://github.com/tomaschochola/php-template-quickmux",
+  "homepage": "https://github.com/tomaschochola/template-php-quickmux",
   "keywords": [
     "tomaschochola",
     "TomasChochola",
     "Tomas Chochola",
     "Tomáš Chochola",
-    "php-template-quickmux"
+    "template-php-quickmux"
   ],
   "license": "CC-BY-ND-4.0",
-  "name": "@tomaschochola/php-template-quickmux",
-  "repository": "github:tomaschochola/php-template-quickmux",
+  "name": "@tomaschochola/template-php-quickmux",
+  "repository": "github:tomaschochola/template-php-quickmux",
   "sideEffects": false,
   "type": "module"
 }

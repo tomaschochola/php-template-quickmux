@@ -139,7 +139,7 @@ image:
 
 .PHONY: deploy
 deploy:
-	docker stack deploy -c ./docker-compose.yml -c ./docker-compose-swarm.yml --with-registry-auth --prune --detach=false --resolve-image=always ${CI_PROJECT_PATH_SLUG:-php-template-quickmux}
+	docker stack deploy -c ./docker-compose.yml -c ./docker-compose-swarm.yml --with-registry-auth --prune --detach=false --resolve-image=always ${CI_PROJECT_PATH_SLUG:-template-php-quickmux}
 
 .PHONY: up
 up:
