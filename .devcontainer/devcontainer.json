@@ -2,7 +2,7 @@
   "containerUser": "devcontainer",
   "customizations": {
     "vscode": {
-      "extensions": ["DEVSENSE.phptools-vscode", "EditorConfig.EditorConfig", "Tyriar.sort-lines", "docker.docker"],
+      "extensions": ["EditorConfig.EditorConfig", "Tyriar.sort-lines", "docker.docker", "ms-azuretools.vscode-containers", "ms-vscode.makefile-tools", "DEVSENSE.phptools-vscode"],
       "settings": {
         "editor.codeActionsOnSave": {
           "source.addMissingImports.ts": "explicit",
