@@ -63,7 +63,7 @@ services:
         monitor: '60s'
         order: 'stop-first'
         parallelism: 1
-    image: '${CI_REGISTRY_IMAGE:-oci.localhost}/nginx:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-latest}'
+    image: '${CI_REGISTRY_IMAGE:-oci.localhost}/nginx:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-dev}'
   php:
     deploy:
       mode: 'replicated'
@@ -92,7 +92,7 @@ services:
         monitor: '60s'
         order: 'stop-first'
         parallelism: 1
-    image: '${CI_REGISTRY_IMAGE:-oci.localhost}/php:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-latest}'
+    image: '${CI_REGISTRY_IMAGE:-oci.localhost}/php:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-dev}'
   valkey:
     deploy:
       mode: 'replicated'

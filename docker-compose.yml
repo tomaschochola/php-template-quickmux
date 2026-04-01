@@ -93,8 +93,6 @@ services:
     networks:
       - 'nginx'
       - 'php'
-    ports:
-      - '8080:8080'
     read_only: true
     restart: 'unless-stopped'
     security_opt:

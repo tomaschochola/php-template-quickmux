@@ -2,13 +2,7 @@
   "containerUser": "devcontainer",
   "customizations": {
     "vscode": {
-      "extensions": [
-        "EditorConfig.EditorConfig",
-        "Tyriar.sort-lines",
-        "docker.docker",
-        "ms-vscode.makefile-tools",
-        "DEVSENSE.phptools-vscode"
-      ],
+      "extensions": ["EditorConfig.EditorConfig", "Tyriar.sort-lines", "docker.docker", "ms-vscode.makefile-tools", "DEVSENSE.phptools-vscode"],
       "settings": {
         "editor.codeActionsOnSave": {
           "source.organizeImports": "always",
@@ -21,10 +15,7 @@
       }
     }
   },
-  "dockerComposeFile": [
-    "../docker-compose.yml",
-    "../docker-compose-devcontainer.yml"
-  ],
+  "dockerComposeFile": ["../docker-compose.yml", "../docker-compose-devcontainer.yml"],
   "init": true,
   "postCreateCommand": "make postcreate",
   "remoteUser": "devcontainer",

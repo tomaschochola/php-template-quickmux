@@ -62,7 +62,7 @@ FROM versionedcomposer AS vendor
 COPY ./composer* ./
 RUN <<EOF
   set -euo pipefail
-  composer install --no-ansi --no-interaction --no-plugins --no-scripts --no-dev --no-autoloader --ignore-platform-reqs
+  composer install --no-plugins --no-scripts --no-dev --no-autoloader --ignore-platform-reqs
 EOF
 
 FROM base AS php
@@ -73,10 +73,10 @@ COPY ./src ./src
 COPY ./bin ./bin
 RUN <<EOF
   set -euo pipefail
-  composer dump-autoload --no-ansi --no-interaction --no-plugins --no-scripts --no-dev --classmap-authoritative --strict-psr --strict-ambiguous
-  composer audit --no-ansi --no-interaction --no-plugins --no-scripts --no-dev
-  composer check-platform-reqs --no-ansi --no-interaction --no-plugins --no-scripts --no-dev
-  composer validate --no-ansi --no-interaction --no-plugins --no-scripts --strict --with-dependencies --check-lock
+  composer dump-autoload --no-plugins --no-scripts --no-dev --classmap-authoritative --strict-psr --strict-ambiguous
+  composer audit --no-plugins --no-scripts --no-dev
+  composer check-platform-reqs --no-plugins --no-scripts --no-dev
+  composer validate --no-plugins --no-scripts --strict --with-dependencies --check-lock
   mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 EOF
 COPY ./ops/php/z.ini /usr/local/etc/php/conf.d/z.ini

@@ -13,32 +13,32 @@ export PHP_CS_FIXER_FUTURE_MODE=1
 commit: distclean update fix check
 
 .PHONY: fix
-fix: eslint_fix prettier_fix fix_php_cs_fixer yq_fix
+fix: eslint_fix prettier_fix php_cs_fixer_fix yq_fix
 
 .PHONY: check
 check: lint stan test audit
 
 .PHONY: lint
-lint: eslint_check prettier_check lint_php_cs_fixer
+lint: eslint_check prettier_check php_cs_fixer_check
 
 .PHONY: stan
-stan: stan_phpstan
+stan: phpstan_check
 
 .PHONY: test
-test: test_phpunit
+test: phpunit_test
 
 .PHONY: coverage
 coverage: ./.phpunit.coverage/html
 	php -S 0.0.0.0:8000 -t ./.phpunit.coverage/html
 
 .PHONY: audit
-audit: npm_audit audit_composer
+audit: npm_audit composer_audit
 
 .PHONY: install
-install: npm_install install_composer
+install: npm_install composer_install
 
 .PHONY: update
-update: npm_update update_composer
+update: npm_update composer_update
 
 .PHONY: clean
 clean:
@@ -61,9 +61,9 @@ eslint_fix: ./node_modules ./eslint.config.js
 prettier_fix: ./node_modules ./prettier.config.js
 	npm exec --ignore-scripts -- prettier -w .
 
-.PHONY: fix_php_cs_fixer
-fix_php_cs_fixer: ./vendor ./.php-cs-fixer.php
-	composer exec --no-ansi --no-interaction --no-plugins --no-scripts -- php-cs-fixer --no-ansi --no-interaction --show-progress=none fix
+.PHONY: php_cs_fixer_fix
+php_cs_fixer_fix: ./vendor ./.php-cs-fixer.php
+	composer exec --no-plugins --no-scripts -- php-cs-fixer fix
 
 .PHONY: yq_fix
 yq_fix:
@@ -77,37 +77,37 @@ eslint_check: ./node_modules ./eslint.config.js
 prettier_check: ./node_modules ./prettier.config.js
 	npm exec --ignore-scripts -- prettier -c .
 
-.PHONY: lint_php_cs_fixer
-lint_php_cs_fixer: ./vendor ./.php-cs-fixer.php
-	composer exec --no-ansi --no-interaction --no-plugins --no-scripts -- php-cs-fixer --no-ansi --no-interaction --show-progress=none check
+.PHONY: php_cs_fixer_check
+php_cs_fixer_check: ./vendor ./.php-cs-fixer.php
+	composer exec --no-plugins --no-scripts -- php-cs-fixer check
 
-.PHONY: stan_phpstan
-stan_phpstan: ./vendor ./phpstan.neon
-	composer exec --no-ansi --no-interaction --no-plugins --no-scripts -- phpstan analyse --no-ansi --no-interaction --no-progress
+.PHONY: phpstan_check
+phpstan_check: ./vendor ./phpstan.neon
+	composer exec --no-plugins --no-scripts -- phpstan analyse
 
-.PHONY: test_phpunit
-test_phpunit: ./vendor ./phpunit.xml
-	composer exec --no-ansi --no-interaction --no-plugins --no-scripts -- phpunit --no-progress --colors=never
+.PHONY: phpunit_test
+phpunit_test: ./vendor ./phpunit.xml
+	composer exec --no-plugins --no-scripts -- phpunit
 
 .PHONY: npm_audit
 npm_audit: ./node_modules ./package.json ./package-lock.json
 	npm audit --ignore-scripts --audit-level=critical --install-links --include=prod --include=dev --include=peer --include=optional
 
-.PHONY: audit_composer
-audit_composer: ./vendor ./composer.json ./composer.lock
-	composer audit --no-ansi --no-interaction --no-plugins --no-scripts
-	composer check-platform-reqs --no-ansi --no-interaction --no-plugins --no-scripts
-	composer validate --no-ansi --no-interaction --no-plugins --no-scripts --strict --with-dependencies --check-lock
-	composer dump-autoload --no-ansi --no-interaction --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
+.PHONY: composer_audit
+composer_audit: ./vendor ./composer.json ./composer.lock
+	composer audit --no-plugins --no-scripts
+	composer check-platform-reqs --no-plugins --no-scripts
+	composer validate --no-plugins --no-scripts --strict --with-dependencies --check-lock
+	composer dump-autoload --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
 
 .PHONY: npm_install
 npm_install: ./package.json ./package-lock.json
 	npm install --ignore-scripts --install-links --include=prod --include=dev --include=peer --include=optional
 
-.PHONY: install_composer
-install_composer: ./composer.json ./composer.lock
-	composer install --no-ansi --no-interaction --no-plugins --no-scripts --no-autoloader
-	composer dump-autoload --no-ansi --no-interaction --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
+.PHONY: composer_install
+composer_install: ./composer.json ./composer.lock
+	composer install --no-plugins --no-scripts --no-autoloader
+	composer dump-autoload --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
 
 .PHONY: npm_update
 npm_update: ./package.json
@@ -115,12 +115,12 @@ npm_update: ./package.json
 	rm -rf ./package-lock.json
 	npm update --ignore-scripts --install-links --include=prod --include=dev --include=peer --include=optional
 
-.PHONY: update_composer
-update_composer: ./composer.json
+.PHONY: composer_update
+composer_update: ./composer.json
 	rm -rf ./vendor
 	rm -rf ./composer.lock
-	composer update --no-ansi --no-interaction --no-plugins --no-scripts --no-autoloader --with-all-dependencies
-	composer dump-autoload --no-ansi --no-interaction --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
+	composer update --no-plugins --no-scripts --no-autoloader --with-all-dependencies
+	composer dump-autoload --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
 
 .PHONY: postcreate
 postcreate: install migrate
@@ -165,10 +165,10 @@ devcontainer:
 
 # Dependencies
 ./.phpunit.coverage/html:
-	${MAKE} test_phpunit
+	${MAKE} phpunit_test
 
 ./composer.lock ./vendor: ./composer.json
-	${MAKE} update_composer
+	${MAKE} composer_update
 
 ./package-lock.json ./node_modules: ./package.json
 	${MAKE} npm_update
