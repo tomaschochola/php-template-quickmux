@@ -13,13 +13,13 @@ export PHP_CS_FIXER_FUTURE_MODE=1
 commit: distclean update fix check
 
 .PHONY: fix
-fix: fix_eslint fix_prettier fix_php_cs_fixer fix_yaml
+fix: eslint_fix prettier_fix fix_php_cs_fixer yq_fix
 
 .PHONY: check
 check: lint stan test audit
 
 .PHONY: lint
-lint: lint_eslint lint_prettier lint_php_cs_fixer
+lint: eslint_check prettier_check lint_php_cs_fixer
 
 .PHONY: stan
 stan: stan_phpstan
@@ -32,13 +32,13 @@ coverage: ./.phpunit.coverage/html
 	php -S 0.0.0.0:8000 -t ./.phpunit.coverage/html
 
 .PHONY: audit
-audit: audit_npm audit_composer
+audit: npm_audit audit_composer
 
 .PHONY: install
-install: install_npm install_composer
+install: npm_install install_composer
 
 .PHONY: update
-update: update_npm update_composer
+update: npm_update update_composer
 
 .PHONY: clean
 clean:
@@ -53,29 +53,29 @@ clean:
 distclean: clean
 	git clean -Xfd
 
-.PHONY: fix_eslint
-fix_eslint: ./node_modules ./eslint.config.js
-	npm exec --ignore-scripts --no-progress --no-color --loglevel=warn -- eslint --quiet --concurrency=auto --no-color --fix .
+.PHONY: eslint_fix
+eslint_fix: ./node_modules ./eslint.config.js
+	npm exec --ignore-scripts -- eslint --concurrency=auto --fix .
 
-.PHONY: fix_prettier
-fix_prettier: ./node_modules ./prettier.config.js
-	npm exec --ignore-scripts --no-progress --no-color --loglevel=warn -- prettier --log-level=warn --no-color -w .
+.PHONY: prettier_fix
+prettier_fix: ./node_modules ./prettier.config.js
+	npm exec --ignore-scripts -- prettier -w .
 
 .PHONY: fix_php_cs_fixer
 fix_php_cs_fixer: ./vendor ./.php-cs-fixer.php
 	composer exec --no-ansi --no-interaction --no-plugins --no-scripts -- php-cs-fixer --no-ansi --no-interaction --show-progress=none fix
 
-.PHONY: fix_yaml
-fix_yaml:
+.PHONY: yq_fix
+yq_fix:
 	find . -type f -name "*.yml" -exec yq -i 'sort_keys(..)' {} \;
 
-.PHONY: lint_eslint
-lint_eslint: ./node_modules ./eslint.config.js
-	npm exec --ignore-scripts --no-progress --no-color --loglevel=warn -- eslint --quiet --concurrency=auto --no-color .
+.PHONY: eslint_check
+eslint_check: ./node_modules ./eslint.config.js
+	npm exec --ignore-scripts -- eslint --concurrency=auto .
 
-.PHONY: lint_prettier
-lint_prettier: ./node_modules ./prettier.config.js
-	npm exec --ignore-scripts --no-progress --no-color --loglevel=warn -- prettier --log-level=warn --no-color -c .
+.PHONY: prettier_check
+prettier_check: ./node_modules ./prettier.config.js
+	npm exec --ignore-scripts -- prettier -c .
 
 .PHONY: lint_php_cs_fixer
 lint_php_cs_fixer: ./vendor ./.php-cs-fixer.php
@@ -89,9 +89,9 @@ stan_phpstan: ./vendor ./phpstan.neon
 test_phpunit: ./vendor ./phpunit.xml
 	composer exec --no-ansi --no-interaction --no-plugins --no-scripts -- phpunit --no-progress --colors=never
 
-.PHONY: audit_npm
-audit_npm: ./node_modules ./package.json ./package-lock.json
-	npm audit --ignore-scripts --no-progress --no-color --loglevel=warn --audit-level=critical --install-links --include=prod --include=dev --include=peer --include=optional
+.PHONY: npm_audit
+npm_audit: ./node_modules ./package.json ./package-lock.json
+	npm audit --ignore-scripts --audit-level=critical --install-links --include=prod --include=dev --include=peer --include=optional
 
 .PHONY: audit_composer
 audit_composer: ./vendor ./composer.json ./composer.lock
@@ -100,20 +100,20 @@ audit_composer: ./vendor ./composer.json ./composer.lock
 	composer validate --no-ansi --no-interaction --no-plugins --no-scripts --strict --with-dependencies --check-lock
 	composer dump-autoload --no-ansi --no-interaction --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
 
-.PHONY: install_npm
-install_npm: ./package.json ./package-lock.json
-	npm install --ignore-scripts --no-progress --no-color --loglevel=warn --install-links --include=prod --include=dev --include=peer --include=optional
+.PHONY: npm_install
+npm_install: ./package.json ./package-lock.json
+	npm install --ignore-scripts --install-links --include=prod --include=dev --include=peer --include=optional
 
 .PHONY: install_composer
 install_composer: ./composer.json ./composer.lock
 	composer install --no-ansi --no-interaction --no-plugins --no-scripts --no-autoloader
 	composer dump-autoload --no-ansi --no-interaction --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
 
-.PHONY: update_npm
-update_npm: ./package.json
+.PHONY: npm_update
+npm_update: ./package.json
 	rm -rf ./node_modules
 	rm -rf ./package-lock.json
-	npm update --ignore-scripts --no-progress --no-color --loglevel=warn --install-links --include=prod --include=dev --include=peer --include=optional
+	npm update --ignore-scripts --install-links --include=prod --include=dev --include=peer --include=optional
 
 .PHONY: update_composer
 update_composer: ./composer.json
@@ -143,11 +143,11 @@ deploy:
 
 .PHONY: up
 up:
-	docker compose -f ./docker-compose.yml up --build --remove-orphans --always-recreate-deps --force-recreate --pull=always --renew-anon-volumes
+	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml up --build --remove-orphans --always-recreate-deps --force-recreate --pull=always --renew-anon-volumes
 
 .PHONY: down
 down:
-	docker compose down --volumes --remove-orphans --rmi=local
+	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml down --remove-orphans --rmi=local
 
 .PHONY: password
 password:
@@ -160,8 +160,8 @@ secret:
 .PHONY: devcontainer
 devcontainer:
 	devcontainer up
-	devcontainer exec /bin/bash
-	docker compose -f ./docker-compose.yml -f ./docker-compose-devcontainer.yml down --remove-orphans
+	devcontainer exec /bin/bash || true
+	docker compose -f ./docker-compose.yml -f ./docker-compose-devcontainer.yml down --remove-orphans --rmi=local
 
 # Dependencies
 ./.phpunit.coverage/html:
@@ -171,4 +171,4 @@ devcontainer:
 	${MAKE} update_composer
 
 ./package-lock.json ./node_modules: ./package.json
-	${MAKE} update_npm
+	${MAKE} npm_update

@@ -29,6 +29,7 @@ COPY --from=versionedcomposer /usr/bin/composer /usr/bin/composer
 FROM base AS devcontainer
 ENV APP_ENV=local
 ENV NODE_ENV=development
+ADD --chmod=755 https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 /usr/local/bin/yq
 RUN <<EOF
   set -euo pipefail
   apt-get update -y
@@ -44,15 +45,9 @@ RUN <<EOF
   mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
   groupadd devcontainer
   useradd -s /bin/bash --gid devcontainer -m devcontainer
-  mkdir -p /home/devcontainer/.composer
-  chown -R devcontainer:devcontainer /home/devcontainer/.composer
-  mkdir -p /home/devcontainer/.npm
-  chown -R devcontainer:devcontainer /home/devcontainer/.npm
   wget https://nodejs.org/dist/v24.14.0/node-v24.14.0-linux-x64.tar.xz -O node.tar.xz
   tar -xf node.tar.xz -C /usr/local --strip-components=1
   rm node.tar.xz
-  wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
-  chmod +x /usr/local/bin/yq
   apt-get autoremove -y
   apt-get autoclean -y
   apt-get clean -y
