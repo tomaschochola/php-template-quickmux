@@ -21,11 +21,8 @@ services:
       APP_ENV: 'local'
       MYSQL_DATABASE: 'db'
       MYSQL_HOST: 'mysql'
-      MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
-      MYSQL_ROOT_PASSWORD_FILE: '/run/secrets/db_root_password'
-      MYSQL_ROOT_USER: 'root'
+      MYSQL_ROOT_PASSWORD: '/run/secrets/mysql_root_password'
       MYSQL_UNIT_DATABASE: 'db_unit'
-      MYSQL_USER: 'db'
       NODE_ENV: 'development'
     networks:
       - 'devcontainer'
@@ -34,8 +31,7 @@ services:
       - 'php'
       - 'valkey'
     secrets:
-      - 'db_password'
-      - 'db_root_password'
+      - 'mysql_root_password'
     user: 'devcontainer'
     volumes:
       - './:/var/www/html'

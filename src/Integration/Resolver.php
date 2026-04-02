@@ -213,8 +213,8 @@ final readonly class Resolver
             'port' => '',
             'dbname' => $container->get('MYSQL_DATABASE'),
             'socket' => '',
-            'username' => $container->get('MYSQL_USER'),
-            'password' => $container->get('MYSQL_PASSWORD_FILE'),
+            'username' => 'root',
+            'password' => $container->get('MYSQL_ROOT_PASSWORD'),
             'options' => [],
         ]));
 

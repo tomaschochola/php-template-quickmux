@@ -66,7 +66,7 @@ final readonly class ContainerManifest implements IteratorAggregate
     {
         yield from self::global();
 
-        yield from new EnvLoader(['APP_ENV', 'MYSQL_HOST', 'MYSQL_DATABASE', 'MYSQL_USER', 'MYSQL_PASSWORD_FILE']);
+        yield from new EnvLoader(['APP_ENV', 'MYSQL_HOST', 'MYSQL_DATABASE', 'MYSQL_USER', 'MYSQL_ROOT_PASSWORD']);
 
         yield from self::routes();
 
@@ -95,7 +95,7 @@ final readonly class ContainerManifest implements IteratorAggregate
         if ($scope === 'unit') {
             yield from self::unit();
 
-            yield from new EnvLoader(['MYSQL_UNIT_DATABASE' => 'MYSQL_DATABASE', 'MYSQL_ROOT_USER' => 'MYSQL_USER', 'MYSQL_ROOT_PASSWORD_FILE' => 'MYSQL_PASSWORD_FILE']);
+            yield from new EnvLoader(['MYSQL_UNIT_DATABASE' => 'MYSQL_DATABASE']);
 
             yield from new IniLoader(new GlobIterator('./config/phpunit.ini'));
 

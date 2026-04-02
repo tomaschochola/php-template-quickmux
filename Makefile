@@ -147,7 +147,7 @@ up:
 
 .PHONY: down
 down:
-	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml down --remove-orphans --rmi=local
+	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml down --remove-orphans
 
 .PHONY: password
 password:
@@ -161,7 +161,7 @@ secret:
 devcontainer:
 	devcontainer up
 	devcontainer exec /bin/bash || true
-	docker compose -f ./docker-compose.yml -f ./docker-compose-devcontainer.yml down --remove-orphans --rmi=local
+	docker compose -f ./docker-compose.yml -f ./docker-compose-devcontainer.yml down --remove-orphans
 
 # Dependencies
 ./.phpunit.coverage/html:

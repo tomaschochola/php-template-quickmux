@@ -8,9 +8,7 @@ networks:
   valkey:
     internal: true
 secrets:
-  db_password:
-    file: './ops/secret'
-  db_root_password:
+  mysql_root_password:
     file: './ops/secret'
 services:
   mysql:
@@ -22,16 +20,15 @@ services:
       - 'ALL'
     environment:
       MYSQL_DATABASE: 'db'
-      MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
-      MYSQL_ROOT_PASSWORD_FILE: '/run/secrets/db_root_password'
-      MYSQL_USER: 'db'
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: '/run/secrets/mysql_root_password'
     healthcheck:
       interval: '10s'
       retries: 3
       start_period: '30s'
       test:
         - 'CMD-SHELL'
-        - 'MYSQL_PWD="$(cat "$${MYSQL_ROOT_PASSWORD_FILE}")" mysql -uroot ready -e "SELECT 1" || exit 1'
+        - 'mysql --defaults-extra-file=/var/lib/mysql-files/healthcheck.cnf -e "SELECT 1" || exit 1'
       timeout: '5s'
     logging:
       driver: 'json-file'
@@ -40,11 +37,9 @@ services:
         max-size: '10m'
     networks:
       - 'mysql'
-    read_only: true
     restart: 'unless-stopped'
     secrets:
-      - 'db_password'
-      - 'db_root_password'
+      - 'mysql_root_password'
     security_opt:
       - 'no-new-privileges:true'
     stop_grace_period: '60s'
@@ -56,14 +51,6 @@ services:
         soft: 1048576
     user: 'mysql'
     volumes:
-      - target: '/tmp'
-        tmpfs:
-          mode: 01777
-        type: 'tmpfs'
-      - target: '/run'
-        tmpfs:
-          mode: 01777
-        type: 'tmpfs'
       - source: 'mysql_data'
         target: '/var/lib/mysql'
         type: 'volume'
@@ -133,8 +120,7 @@ services:
       APP_ENV: 'production'
       MYSQL_DATABASE: 'db'
       MYSQL_HOST: 'mysql'
-      MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
-      MYSQL_USER: 'db'
+      MYSQL_ROOT_PASSWORD: '/run/secrets/mysql_root_password'
       NODE_ENV: 'production'
     healthcheck:
       interval: '10s'
@@ -156,7 +142,7 @@ services:
     read_only: true
     restart: 'unless-stopped'
     secrets:
-      - 'db_password'
+      - 'mysql_root_password'
     security_opt:
       - 'no-new-privileges:true'
     stop_grace_period: '60s'
@@ -199,7 +185,6 @@ services:
         max-size: '10m'
     networks:
       - 'valkey'
-    read_only: true
     restart: 'unless-stopped'
     security_opt:
       - 'no-new-privileges:true'
@@ -212,14 +197,6 @@ services:
         soft: 1048576
     user: 'valkey'
     volumes:
-      - target: '/tmp'
-        tmpfs:
-          mode: 01777
-        type: 'tmpfs'
-      - target: '/run'
-        tmpfs:
-          mode: 01777
-        type: 'tmpfs'
       - source: 'valkey_data'
         target: '/data'
         type: 'volume'

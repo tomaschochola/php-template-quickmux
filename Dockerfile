@@ -3,7 +3,7 @@
 FROM composer:2 AS versionedcomposer
 FROM php:8.5-fpm-trixie AS versionedphp
 FROM nginxinc/nginx-unprivileged:1-trixie AS versionednginx
-FROM mysql:8-oracle AS versionedmysql
+FROM container-registry.oracle.com/mysql/community-server:9.6 AS versionedmysql
 FROM valkey/valkey:9-trixie AS versionedvalkey
 
 FROM versionedphp AS base
