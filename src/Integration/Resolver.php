@@ -34,10 +34,8 @@ use TomasChochola\Migrations\Mysql\MysqlMigrations;
 use TomasChochola\Pdo\LockerInterface;
 use TomasChochola\Pdo\Mysql\MysqlFactory;
 use TomasChochola\Pdo\Mysql\MysqlLocker;
-use TomasChochola\Pdo\Mysql\MysqlProbe;
 use TomasChochola\Pdo\Mysql\MysqlQuery;
 use TomasChochola\Pdo\Mysql\MysqlSettingsFactory;
-use TomasChochola\Pdo\ProbeInterface;
 use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Clock\NowClock;
 use TomasChochola\Psr\Http\Factory\CgiServerRequestFactory;
@@ -193,16 +191,6 @@ final readonly class Resolver
         assert($factory instanceof ResponseFactoryInterface);
 
         return new OkRequestHandler($factory);
-    }
-
-    #[NoDiscard]
-    public static function ProbeInterface(ContainerInterface $container): ProbeInterface
-    {
-        $query = $container->get(QueryInterface::class);
-
-        assert($query instanceof QueryInterface);
-
-        return new MysqlProbe($query);
     }
 
     #[NoDiscard]

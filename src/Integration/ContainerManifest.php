@@ -33,7 +33,6 @@ use TomasChochola\Loaders\PhpLoader;
 use TomasChochola\Migrations\MigrationsInterface;
 use TomasChochola\Migrations\MigratorInterface;
 use TomasChochola\Pdo\LockerInterface;
-use TomasChochola\Pdo\ProbeInterface;
 use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Clock\FixedClock;
 use TomasChochola\Psr\Container\SingletonResolver;
@@ -153,8 +152,6 @@ final readonly class ContainerManifest implements IteratorAggregate
         yield QueryInterface::class => new SingletonResolver([Resolver::class, 'QueryInterface']);
 
         yield LockerInterface::class => new SingletonResolver([Resolver::class, 'LockerInterface']);
-
-        yield ProbeInterface::class => new SingletonResolver([Resolver::class, 'ProbeInterface']);
 
         yield MigratorInterface::class => new SingletonResolver([Resolver::class, 'MigratorInterface']);
 

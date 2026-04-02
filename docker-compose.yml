@@ -3,12 +3,16 @@ networks:
     internal: true
   nginx:
     internal: false
+  oracle:
+    internal: true
   php:
     internal: true
   valkey:
     internal: true
 secrets:
   mysql_root_password:
+    file: './ops/secret'
+  oracle_pwd:
     file: './ops/secret'
 services:
   mysql:
@@ -53,6 +57,37 @@ services:
     volumes:
       - source: 'mysql_data'
         target: '/var/lib/mysql'
+        type: 'volume'
+  oracle:
+    build:
+      context: './'
+      dockerfile: './Dockerfile'
+      target: 'oracle'
+    cap_drop:
+      - 'ALL'
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: 3
+        max-size: '10m'
+    networks:
+      - 'oracle'
+    restart: 'unless-stopped'
+    secrets:
+      - 'oracle_pwd'
+    security_opt:
+      - 'no-new-privileges:true'
+    stop_grace_period: '60s'
+    sysctls:
+      - 'net.core.somaxconn=65535'
+    ulimits:
+      nofile:
+        hard: 1048576
+        soft: 1048576
+    user: 'oracle'
+    volumes:
+      - source: 'oracle_data'
+        target: '/opt/oracle/oradata'
         type: 'volume'
   nginx:
     build:
@@ -138,6 +173,7 @@ services:
         max-size: '10m'
     networks:
       - 'mysql'
+      - 'oracle'
       - 'php'
       - 'valkey'
     read_only: true
@@ -203,4 +239,5 @@ services:
         type: 'volume'
 volumes:
   mysql_data:
+  oracle_data:
   valkey_data:
