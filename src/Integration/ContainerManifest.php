@@ -66,7 +66,7 @@ final readonly class ContainerManifest implements IteratorAggregate
     {
         yield from self::global();
 
-        yield from new EnvLoader(['APP_ENV', 'MYSQL_HOST', 'MYSQL_DATABASE', 'MYSQL_USER', 'MYSQL_ROOT_PASSWORD']);
+        yield from new EnvLoader(['APP_ENV', 'MYSQL_HOST', 'MYSQL_DATABASE', 'MYSQL_ROOT_USER', 'MYSQL_ROOT_PASSWORD']);
 
         yield from self::routes();
 

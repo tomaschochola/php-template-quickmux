@@ -121,6 +121,7 @@ services:
       MYSQL_DATABASE: 'db'
       MYSQL_HOST: 'mysql'
       MYSQL_ROOT_PASSWORD: '/run/secrets/mysql_root_password'
+      MYSQL_ROOT_USER: 'root'
       NODE_ENV: 'production'
     healthcheck:
       interval: '10s'
