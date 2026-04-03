@@ -32,8 +32,8 @@ use TomasChochola\Loaders\IniLoader;
 use TomasChochola\Loaders\PhpLoader;
 use TomasChochola\Migrations\MigrationsInterface;
 use TomasChochola\Migrations\MigratorInterface;
-use TomasChochola\Pdo\LockerInterface;
-use TomasChochola\Pdo\QueryInterface;
+use TomasChochola\Oracle\Database\OracleConnection;
+use TomasChochola\Oracle\Database\OracleDatabase;
 use TomasChochola\Psr\Clock\FixedClock;
 use TomasChochola\Psr\Container\SingletonResolver;
 use TomasChochola\Psr\Http\RequestHandlers\NotFoundRequestHandler;
@@ -65,7 +65,7 @@ final readonly class ContainerManifest implements IteratorAggregate
     {
         yield from self::global();
 
-        yield from new EnvLoader(['APP_ENV', 'MYSQL_HOST', 'MYSQL_DATABASE', 'MYSQL_ROOT_USER', 'MYSQL_ROOT_PASSWORD']);
+        yield from new EnvLoader(['APP_ENV', 'ORACLE_DATABASE', 'ORACLE_HOST', 'ORACLE_PASSWORD', 'ORACLE_USER']);
 
         yield from self::routes();
 
@@ -94,7 +94,7 @@ final readonly class ContainerManifest implements IteratorAggregate
         if ($scope === 'unit') {
             yield from self::unit();
 
-            yield from new EnvLoader(['MYSQL_UNIT_DATABASE' => 'MYSQL_DATABASE']);
+            yield from new EnvLoader(['ORACLE_UNIT_USER' => 'ORACLE_USER']);
 
             yield from new IniLoader(new GlobIterator('./config/phpunit.ini'));
 
@@ -149,9 +149,9 @@ final readonly class ContainerManifest implements IteratorAggregate
 
         yield ServerRequestInterface::class => new SingletonResolver([Resolver::class, 'ServerRequestInterface']);
 
-        yield QueryInterface::class => new SingletonResolver([Resolver::class, 'QueryInterface']);
+        yield OracleDatabase::class => new SingletonResolver([Resolver::class, 'OracleDatabase']);
 
-        yield LockerInterface::class => new SingletonResolver([Resolver::class, 'LockerInterface']);
+        yield OracleConnection::class => new SingletonResolver([Resolver::class, 'OracleConnection']);
 
         yield MigratorInterface::class => new SingletonResolver([Resolver::class, 'MigratorInterface']);
 
@@ -172,7 +172,6 @@ final readonly class ContainerManifest implements IteratorAggregate
     private static function routes(): iterable
     {
         $routes = new RouteLoader();
-
         $global = [ThrowableCatcherMiddleware::class, ThrowableLoggerMiddleware::class];
 
         $routes->route(['GET'], '/healthz/live', [...$global, OkRequestHandler::class]);

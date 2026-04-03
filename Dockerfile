@@ -3,7 +3,6 @@
 FROM composer:2 AS versionedcomposer
 FROM php:8.5-fpm-trixie AS versionedphp
 FROM nginxinc/nginx-unprivileged:1-trixie AS versionednginx
-FROM container-registry.oracle.com/mysql/community-server:9.6 AS versionedmysql
 FROM container-registry.oracle.com/database/free:latest AS versionedoracle
 FROM valkey/valkey:9-trixie AS versionedvalkey
 
@@ -31,10 +30,10 @@ RUN <<EOF
   ln -sfn /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1
   echo /opt/oracle/instantclient > /etc/ld.so.conf.d/oracle-instantclient.conf
   ldconfig
-  docker-php-ext-install pdo_mysql
+  pecl channel-update pecl.php.net
   pecl install apcu redis
-  printf 'instantclient,/opt/oracle/instantclient\n' | pecl install pdo_oci
-  docker-php-ext-enable apcu pdo_oci redis
+  printf 'instantclient,/opt/oracle/instantclient\n' | pecl install oci8
+  docker-php-ext-enable oci8 apcu redis
   rm -rf /opt/oracle/instantclient/sdk /tmp/pear
   apt-get autoremove -y
   apt-get autoclean -y
@@ -110,9 +109,7 @@ RUN <<EOF
 	openssl req -x509 -newkey rsa:4096 -nodes -sha256 -keyout /etc/nginx/snakeoil.key -out /etc/nginx/snakeoil.pem -days 3650 -subj "/CN=localhost" -addext "subjectAltName=DNS:*.localhost,DNS:localhost"
 EOF
 
-FROM versionedmysql AS mysql
-COPY ./ops/mysql /docker-entrypoint-initdb.d
-
 FROM versionedoracle AS oracle
+COPY --chmod=755 ./ops/oracle/startup/00_init.sh /opt/oracle/scripts/startup/00_init.sh
 
 FROM versionedvalkey AS valkey

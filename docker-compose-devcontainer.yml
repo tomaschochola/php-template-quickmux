@@ -9,9 +9,9 @@ services:
       target: 'devcontainer'
     command: 'sleep infinity'
     depends_on:
-      mysql:
-        condition: 'service_healthy'
       nginx:
+        condition: 'service_healthy'
+      oracle:
         condition: 'service_healthy'
       php:
         condition: 'service_healthy'
@@ -19,20 +19,20 @@ services:
         condition: 'service_healthy'
     environment:
       APP_ENV: 'local'
-      MYSQL_DATABASE: 'db'
-      MYSQL_HOST: 'mysql'
-      MYSQL_ROOT_PASSWORD: '/run/secrets/mysql_root_password'
-      MYSQL_ROOT_USER: 'root'
-      MYSQL_UNIT_DATABASE: 'db_unit'
       NODE_ENV: 'development'
+      ORACLE_DATABASE: 'FREEPDB1'
+      ORACLE_HOST: 'oracle'
+      ORACLE_PASSWORD: '/run/secrets/oracle_pwd'
+      ORACLE_UNIT_USER: 'APP_UNIT'
+      ORACLE_USER: 'APP'
     networks:
       - 'devcontainer'
-      - 'mysql'
       - 'nginx'
+      - 'oracle'
       - 'php'
       - 'valkey'
     secrets:
-      - 'mysql_root_password'
+      - 'oracle_pwd'
     user: 'devcontainer'
     volumes:
       - './:/var/www/html'

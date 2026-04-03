@@ -30,13 +30,10 @@ use Psr\Log\LoggerInterface;
 use TomasChochola\Migrations\MigrationsInterface;
 use TomasChochola\Migrations\Migrator;
 use TomasChochola\Migrations\MigratorInterface;
-use TomasChochola\Migrations\Mysql\MysqlMigrations;
-use TomasChochola\Pdo\LockerInterface;
-use TomasChochola\Pdo\Mysql\MysqlFactory;
-use TomasChochola\Pdo\Mysql\MysqlLocker;
-use TomasChochola\Pdo\Mysql\MysqlQuery;
-use TomasChochola\Pdo\Mysql\MysqlSettingsFactory;
-use TomasChochola\Pdo\QueryInterface;
+use TomasChochola\Migrations\Oracle\Database\OracleMigrations;
+use TomasChochola\Oracle\Database\OracleConnection;
+use TomasChochola\Oracle\Database\OracleDatabase;
+use TomasChochola\Oracle\Database\OracleSettingsFactory;
 use TomasChochola\Psr\Clock\NowClock;
 use TomasChochola\Psr\Http\Factory\CgiServerRequestFactory;
 use TomasChochola\Psr\Http\Factory\ResponseFactory;
@@ -68,8 +65,13 @@ use TomasChochola\Psr\Log\WriterInterface;
 use UnexpectedValueException;
 
 use function assert;
+use function file_get_contents;
 use function fopen;
 use function is_resource;
+use function is_string;
+use function mb_trim;
+
+use const OCI_DEFAULT;
 
 /**
  * @no-named-arguments
@@ -124,16 +126,6 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function LockerInterface(ContainerInterface $container): LockerInterface
-    {
-        $query = $container->get(QueryInterface::class);
-
-        assert($query instanceof QueryInterface);
-
-        return new MysqlLocker($query);
-    }
-
-    #[NoDiscard]
     public static function LoggerInterface(ContainerInterface $container): LoggerInterface
     {
         $exporter = $container->get(ExporterInterface::class);
@@ -148,29 +140,25 @@ final readonly class Resolver
     #[NoDiscard]
     public static function MigrationsInterface(ContainerInterface $container): MigrationsInterface
     {
-        $query = $container->get(QueryInterface::class);
+        $oracle = $container->get(OracleConnection::class);
         $logger = $container->get(LoggerInterface::class);
 
-        assert($query instanceof QueryInterface);
+        assert($oracle instanceof OracleConnection);
         assert($logger instanceof LoggerInterface);
 
-        return new MysqlMigrations($query, $logger);
+        return new OracleMigrations($oracle, $logger);
     }
 
     #[NoDiscard]
     public static function MigratorInterface(ContainerInterface $container): MigratorInterface
     {
-        $query = $container->get(QueryInterface::class);
         $logger = $container->get(LoggerInterface::class);
         $migrations = $container->get(MigrationsInterface::class);
-        $locker = $container->get(LockerInterface::class);
 
-        assert($query instanceof QueryInterface);
         assert($logger instanceof LoggerInterface);
         assert($migrations instanceof MigrationsInterface);
-        assert($locker instanceof LockerInterface);
 
-        return new Migrator($query, $logger, $migrations, $locker);
+        return new Migrator($logger, $migrations);
     }
 
     #[NoDiscard]
@@ -194,19 +182,42 @@ final readonly class Resolver
     }
 
     #[NoDiscard]
-    public static function QueryInterface(ContainerInterface $container): QueryInterface
+    public static function OracleConnection(ContainerInterface $container): OracleConnection
     {
-        $pdo = (new MysqlFactory())->create((new MysqlSettingsFactory())->createFrom([
-            'host' => $container->get('MYSQL_HOST'),
-            'port' => '',
-            'dbname' => $container->get('MYSQL_DATABASE'),
-            'socket' => '',
-            'username' => $container->get('MYSQL_ROOT_USER'),
-            'password' => $container->get('MYSQL_ROOT_PASSWORD'),
-            'options' => [],
-        ]));
+        $database = $container->get(OracleDatabase::class);
 
-        return new MysqlQuery($pdo);
+        assert($database instanceof OracleDatabase);
+
+        return $database->connect();
+    }
+
+    #[NoDiscard]
+    public static function OracleDatabase(ContainerInterface $container): OracleDatabase
+    {
+        $host = $container->get('ORACLE_HOST');
+        $database = $container->get('ORACLE_DATABASE');
+        $user = $container->get('ORACLE_USER');
+        $passwordFile = $container->get('ORACLE_PASSWORD');
+
+        if (!is_string($host) || !is_string($database) || !is_string($user) || !is_string($passwordFile)) {
+            throw new UnexpectedValueException('oracle settings');
+        }
+
+        $password = file_get_contents($passwordFile);
+
+        if (!is_string($password)) {
+            throw new UnexpectedValueException('file_get_contents');
+        }
+
+        $settings = (new OracleSettingsFactory())->createFrom([
+            'username' => $user,
+            'password' => mb_trim($password),
+            'connectionString' => '//' . $host . '/' . $database,
+            'encoding' => 'AL32UTF8',
+            'sessionMode' => OCI_DEFAULT,
+        ]);
+
+        return new OracleDatabase($settings);
     }
 
     #[NoDiscard]

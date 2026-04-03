@@ -1,6 +1,4 @@
 networks:
-  mysql:
-    internal: true
   nginx:
     internal: false
   oracle:
@@ -10,85 +8,9 @@ networks:
   valkey:
     internal: true
 secrets:
-  mysql_root_password:
-    file: './ops/secret'
   oracle_pwd:
     file: './ops/secret'
 services:
-  mysql:
-    build:
-      context: './'
-      dockerfile: './Dockerfile'
-      target: 'mysql'
-    cap_drop:
-      - 'ALL'
-    environment:
-      MYSQL_DATABASE: 'db'
-      MYSQL_ROOT_HOST: '%'
-      MYSQL_ROOT_PASSWORD: '/run/secrets/mysql_root_password'
-    healthcheck:
-      interval: '10s'
-      retries: 3
-      start_period: '30s'
-      test:
-        - 'CMD-SHELL'
-        - 'mysql --defaults-extra-file=/var/lib/mysql-files/healthcheck.cnf -e "SELECT 1" || exit 1'
-      timeout: '5s'
-    logging:
-      driver: 'json-file'
-      options:
-        max-file: 3
-        max-size: '10m'
-    networks:
-      - 'mysql'
-    restart: 'unless-stopped'
-    secrets:
-      - 'mysql_root_password'
-    security_opt:
-      - 'no-new-privileges:true'
-    stop_grace_period: '60s'
-    sysctls:
-      - 'net.core.somaxconn=65535'
-    ulimits:
-      nofile:
-        hard: 1048576
-        soft: 1048576
-    user: 'mysql'
-    volumes:
-      - source: 'mysql_data'
-        target: '/var/lib/mysql'
-        type: 'volume'
-  oracle:
-    build:
-      context: './'
-      dockerfile: './Dockerfile'
-      target: 'oracle'
-    cap_drop:
-      - 'ALL'
-    logging:
-      driver: 'json-file'
-      options:
-        max-file: 3
-        max-size: '10m'
-    networks:
-      - 'oracle'
-    restart: 'unless-stopped'
-    secrets:
-      - 'oracle_pwd'
-    security_opt:
-      - 'no-new-privileges:true'
-    stop_grace_period: '60s'
-    sysctls:
-      - 'net.core.somaxconn=65535'
-    ulimits:
-      nofile:
-        hard: 1048576
-        soft: 1048576
-    user: 'oracle'
-    volumes:
-      - source: 'oracle_data'
-        target: '/opt/oracle/oradata'
-        type: 'volume'
   nginx:
     build:
       context: './'
@@ -139,6 +61,37 @@ services:
         tmpfs:
           mode: 01777
         type: 'tmpfs'
+  oracle:
+    build:
+      context: './'
+      dockerfile: './Dockerfile'
+      target: 'oracle'
+    cap_drop:
+      - 'ALL'
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: 3
+        max-size: '10m'
+    networks:
+      - 'oracle'
+    restart: 'unless-stopped'
+    secrets:
+      - 'oracle_pwd'
+    security_opt:
+      - 'no-new-privileges:true'
+    stop_grace_period: '60s'
+    sysctls:
+      - 'net.core.somaxconn=65535'
+    ulimits:
+      nofile:
+        hard: 1048576
+        soft: 1048576
+    user: 'oracle'
+    volumes:
+      - source: 'oracle_data'
+        target: '/opt/oracle/oradata'
+        type: 'volume'
   php:
     build:
       context: './'
@@ -147,17 +100,17 @@ services:
     cap_drop:
       - 'ALL'
     depends_on:
-      mysql:
+      oracle:
         condition: 'service_healthy'
       valkey:
         condition: 'service_healthy'
     environment:
       APP_ENV: 'production'
-      MYSQL_DATABASE: 'db'
-      MYSQL_HOST: 'mysql'
-      MYSQL_ROOT_PASSWORD: '/run/secrets/mysql_root_password'
-      MYSQL_ROOT_USER: 'root'
       NODE_ENV: 'production'
+      ORACLE_DATABASE: 'FREEPDB1'
+      ORACLE_HOST: 'oracle'
+      ORACLE_PASSWORD: '/run/secrets/oracle_pwd'
+      ORACLE_USER: 'APP'
     healthcheck:
       interval: '10s'
       retries: 3
@@ -172,14 +125,13 @@ services:
         max-file: 3
         max-size: '10m'
     networks:
-      - 'mysql'
       - 'oracle'
       - 'php'
       - 'valkey'
     read_only: true
     restart: 'unless-stopped'
     secrets:
-      - 'mysql_root_password'
+      - 'oracle_pwd'
     security_opt:
       - 'no-new-privileges:true'
     stop_grace_period: '60s'
@@ -238,6 +190,5 @@ services:
         target: '/data'
         type: 'volume'
 volumes:
-  mysql_data:
   oracle_data:
   valkey_data:
