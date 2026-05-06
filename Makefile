@@ -134,31 +134,26 @@ migrate: ./vendor ./bin/migrate.php ./composer.json ./composer.lock
 	php ./bin/migrate.php
 
 .PHONY: image
-image:
+image: ./.secrets/oracle_pwd
 	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml build --pull --push
 
 .PHONY: deploy
-deploy:
+deploy: ./.secrets/oracle_pwd
 	docker stack deploy -c ./docker-compose.yml -c ./docker-compose-swarm.yml --with-registry-auth --prune --detach=false --resolve-image=always ${CI_PROJECT_PATH_SLUG:-template-php-quickmux}
 
 .PHONY: up
-up:
+up: ./.secrets/oracle_pwd
 	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml up --build --remove-orphans --always-recreate-deps --force-recreate --pull=always --renew-anon-volumes
 
 .PHONY: down
-down:
+down: ./.secrets/oracle_pwd
 	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml down --remove-orphans
 
-.PHONY: password
-password:
-	@tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32
-
-.PHONY: secret
-secret:
-	@tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 64
+.PHONY: secrets
+secrets: ./.secrets/oracle_pwd
 
 .PHONY: devcontainer
-devcontainer:
+devcontainer: ./.secrets/oracle_pwd
 	devcontainer up
 	devcontainer exec /bin/bash || true
 	docker compose -f ./docker-compose.yml -f ./docker-compose-devcontainer.yml down --remove-orphans
@@ -172,3 +167,7 @@ devcontainer:
 
 ./package-lock.json ./node_modules: ./package.json
 	${MAKE} npm_update
+
+./.secrets/oracle_pwd:
+	@mkdir -p ./.secrets
+	@umask 077; tmp="$@.tmp"; tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 32 > "$$tmp"; mv "$$tmp" "$@"

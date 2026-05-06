@@ -91,8 +91,8 @@ final readonly class ContainerManifest implements IteratorAggregate
             yield from self::local();
         }
 
-        if ($scope === 'unit') {
-            yield from self::unit();
+        if ($scope === 'phpunit') {
+            yield from self::phpunit();
 
             yield from new EnvLoader(['ORACLE_UNIT_USER' => 'ORACLE_USER']);
 
@@ -169,6 +169,20 @@ final readonly class ContainerManifest implements IteratorAggregate
     /**
      * @return iterable<mixed, mixed>
      */
+    private static function phpunit(): iterable
+    {
+        yield CacheInterface::class => new NullSimpleCache();
+
+        yield ClockInterface::class => new FixedClock();
+
+        yield FilterInterface::class => new OnlyFilter(['warning', 'error', 'critical', 'alert', 'emergency']);
+
+        yield ThrowableCatcherMiddleware::class => new NullMiddleware();
+    }
+
+    /**
+     * @return iterable<mixed, mixed>
+     */
     private static function routes(): iterable
     {
         $routes = new RouteLoader();
@@ -178,19 +192,5 @@ final readonly class ContainerManifest implements IteratorAggregate
         $routes->route(['*'], '*', [NotFoundRequestHandler::class]);
 
         return $routes;
-    }
-
-    /**
-     * @return iterable<mixed, mixed>
-     */
-    private static function unit(): iterable
-    {
-        yield CacheInterface::class => new NullSimpleCache();
-
-        yield ClockInterface::class => new FixedClock();
-
-        yield FilterInterface::class => new OnlyFilter(['warning', 'error', 'critical', 'alert', 'emergency']);
-
-        yield ThrowableCatcherMiddleware::class => new NullMiddleware();
     }
 }

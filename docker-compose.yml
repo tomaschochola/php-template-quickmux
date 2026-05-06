@@ -9,7 +9,7 @@ networks:
     internal: true
 secrets:
   oracle_pwd:
-    file: './ops/secret'
+    file: './.secrets/oracle_pwd'
 services:
   nginx:
     build:
