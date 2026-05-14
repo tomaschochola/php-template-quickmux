@@ -76,7 +76,7 @@ use const OCI_DEFAULT;
 /**
  * @no-named-arguments
  */
-final readonly class Resolver
+readonly class Resolver
 {
     private function __construct()
     {

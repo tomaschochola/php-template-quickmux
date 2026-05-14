@@ -58,7 +58,7 @@ use Traversable;
  *
  * @implements IteratorAggregate<mixed, mixed>
  */
-final readonly class ContainerManifest implements IteratorAggregate
+readonly class ContainerManifest implements IteratorAggregate
 {
     #[Override]
     public function getIterator(): Traversable

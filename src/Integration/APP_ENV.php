@@ -23,7 +23,7 @@ use function is_string;
 /**
  * @no-named-arguments
  */
-final readonly class APP_ENV
+readonly class APP_ENV
 {
     public static function current(): string
     {

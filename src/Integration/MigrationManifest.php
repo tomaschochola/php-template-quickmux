@@ -26,7 +26,7 @@ use Traversable;
  *
  * @implements IteratorAggregate<mixed, MigrationInterface>
  */
-final readonly class MigrationManifest implements IteratorAggregate
+readonly class MigrationManifest implements IteratorAggregate
 {
     #[Override]
     public function getIterator(): Traversable

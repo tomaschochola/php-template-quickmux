@@ -28,7 +28,7 @@ use function uniqid;
  */
 #[CoversNothing]
 #[Small]
-final class SmokeTest extends TestCase
+class SmokeTest extends TestCase
 {
     #[Test]
     public function testHealtzLive(): void
