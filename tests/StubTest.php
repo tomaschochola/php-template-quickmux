@@ -22,13 +22,16 @@ use PHPUnit\Framework\Attributes\Test;
 
 /**
  * @internal
+ *
  * @no-named-arguments
  */
-#[CoversNothing]
-#[Small]
+#[CoversNothing()]
+#[Small()]
 class StubTest extends TestCase
 {
-    #[DoesNotPerformAssertions]
-    #[Test]
-    public function test(): void {}
+    #[DoesNotPerformAssertions()]
+    #[Test()]
+    public function test(): void
+    {
+    }
 }

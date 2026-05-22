@@ -60,7 +60,7 @@ use Traversable;
  */
 readonly class ContainerManifest implements IteratorAggregate
 {
-    #[Override]
+    #[Override()]
     public function getIterator(): Traversable
     {
         yield from self::global();

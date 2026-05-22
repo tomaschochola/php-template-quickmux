@@ -39,11 +39,12 @@ use const OCI_DEFAULT;
 
 /**
  * @internal
+ *
  * @no-named-arguments
  */
 abstract class TestCase extends PHPUnitFrameworkTestCase
 {
-    private Container|null $container = null;
+    private Container | null $container = null;
 
     protected function container(): Container
     {
@@ -57,7 +58,7 @@ abstract class TestCase extends PHPUnitFrameworkTestCase
     /**
      * @param array<mixed, mixed> $params
      */
-    protected function createServerRequest(string $method, UriInterface|string $uri, array $params = []): ServerRequestInterface
+    protected function createServerRequest(string $method, UriInterface | string $uri, array $params = []): ServerRequestInterface
     {
         return $this->resolve(ServerRequestFactoryInterface::class)->createServerRequest($method, $uri, $params);
     }

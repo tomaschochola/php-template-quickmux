@@ -31,6 +31,7 @@ services:
         order: 'stop-first'
         parallelism: 1
     image: '${CI_REGISTRY_IMAGE:-oci.localhost}/nginx:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-dev}'
+    user: 'nginx:nginx'
   oracle:
     deploy:
       mode: 'replicated'
@@ -63,6 +64,7 @@ services:
         order: 'stop-first'
         parallelism: 1
     image: '${CI_REGISTRY_IMAGE:-oci.localhost}/oracle:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-dev}'
+    user: 'oracle:oracle'
   php:
     deploy:
       mode: 'replicated'
@@ -92,6 +94,7 @@ services:
         order: 'stop-first'
         parallelism: 1
     image: '${CI_REGISTRY_IMAGE:-oci.localhost}/php:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-dev}'
+    user: 'www-data:www-data'
   valkey:
     deploy:
       mode: 'replicated'
@@ -124,3 +127,4 @@ services:
         order: 'stop-first'
         parallelism: 1
     image: '${CI_REGISTRY_IMAGE:-oci.localhost}/valkey:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-dev}'
+    user: 'valkey:valkey'

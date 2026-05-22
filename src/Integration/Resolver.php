@@ -83,13 +83,13 @@ readonly class Resolver
         throw new LogicException('never');
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function ClockInterface(ContainerInterface $container): ClockInterface
     {
         return new NowClock();
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function ExporterInterface(ContainerInterface $container): ExporterInterface
     {
         $filter = $container->get(FilterInterface::class);
@@ -103,13 +103,13 @@ readonly class Resolver
         return new FilterExporter($filter, new FormatterWriterExporter($formatter, $writer));
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function FilterInterface(ContainerInterface $container): FilterInterface
     {
         return new OnlyFilter(['notice', 'warning', 'error', 'critical', 'alert', 'emergency']);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function FormatterInterface(ContainerInterface $container): FormatterInterface
     {
         $interpolator = $container->get(InterpolatorInterface::class);
@@ -119,13 +119,13 @@ readonly class Resolver
         return new JsonFormatter($interpolator);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function InterpolatorInterface(ContainerInterface $container): InterpolatorInterface
     {
         return new Interpolator();
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function LoggerInterface(ContainerInterface $container): LoggerInterface
     {
         $exporter = $container->get(ExporterInterface::class);
@@ -137,7 +137,7 @@ readonly class Resolver
         return new Logger($recorder, $exporter);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function MigrationsInterface(ContainerInterface $container): MigrationsInterface
     {
         $oracle = $container->get(OracleConnection::class);
@@ -149,7 +149,7 @@ readonly class Resolver
         return new OracleMigrations($oracle, $logger);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function MigratorInterface(ContainerInterface $container): MigratorInterface
     {
         $logger = $container->get(LoggerInterface::class);
@@ -161,7 +161,7 @@ readonly class Resolver
         return new Migrator($logger, $migrations);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function NotFoundRequestHandler(ContainerInterface $container): RequestHandlerInterface
     {
         $factory = $container->get(ResponseFactoryInterface::class);
@@ -171,7 +171,7 @@ readonly class Resolver
         return new NotFoundRequestHandler($factory);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function OkRequestHandler(ContainerInterface $container): RequestHandlerInterface
     {
         $factory = $container->get(ResponseFactoryInterface::class);
@@ -181,7 +181,7 @@ readonly class Resolver
         return new OkRequestHandler($factory);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function OracleConnection(ContainerInterface $container): OracleConnection
     {
         $database = $container->get(OracleDatabase::class);
@@ -191,7 +191,7 @@ readonly class Resolver
         return $database->connect();
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function OracleDatabase(ContainerInterface $container): OracleDatabase
     {
         $host = $container->get('ORACLE_HOST');
@@ -220,7 +220,7 @@ readonly class Resolver
         return new OracleDatabase($settings);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function RecorderInterface(ContainerInterface $container): RecorderInterface
     {
         $clock = $container->get(ClockInterface::class);
@@ -230,13 +230,13 @@ readonly class Resolver
         return new Recorder($clock);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function ResponseEmitterInterface(ContainerInterface $container): ResponseEmitterInterface
     {
         return new ResponseEmitter();
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function ResponseFactoryInterface(ContainerInterface $container): ResponseFactoryInterface
     {
         $factory = $container->get(StreamFactoryInterface::class);
@@ -246,7 +246,7 @@ readonly class Resolver
         return new ResponseFactory($factory);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function RouteRequestHandler(ContainerInterface $container): RequestHandlerInterface
     {
         $settings = $container->get(RouteSettingsInterface::class);
@@ -256,7 +256,7 @@ readonly class Resolver
         return new RouteRequestHandler($settings, $container);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function ServerRequestFactoryInterface(ContainerInterface $container): ServerRequestFactoryInterface
     {
         $stream = $container->get(StreamFactoryInterface::class);
@@ -268,7 +268,7 @@ readonly class Resolver
         return new ServerRequestFactory($stream, $uri);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function ServerRequestInterface(ContainerInterface $container): ServerRequestInterface
     {
         $factory = $container->get(ServerRequestFactoryInterface::class);
@@ -278,13 +278,13 @@ readonly class Resolver
         return (new CgiServerRequestFactory($factory))->create();
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function StreamFactoryInterface(ContainerInterface $container): StreamFactoryInterface
     {
         return new StreamFactory();
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function ThrowableCatcherMiddleware(ContainerInterface $container): MiddlewareInterface
     {
         $factory = $container->get(ResponseFactoryInterface::class);
@@ -294,7 +294,7 @@ readonly class Resolver
         return new ThrowableCatcherMiddleware($factory);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function ThrowableLoggerMiddleware(ContainerInterface $container): MiddlewareInterface
     {
         $logger = $container->get(LoggerInterface::class);
@@ -304,16 +304,16 @@ readonly class Resolver
         return new ThrowableLoggerMiddleware($logger);
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function UriFactoryInterface(ContainerInterface $container): UriFactoryInterface
     {
         return new UriFactory();
     }
 
-    #[NoDiscard]
+    #[NoDiscard()]
     public static function WriterInterface(ContainerInterface $container): WriterInterface
     {
-        $resource = fopen('php://stderr', 'w');
+        $resource = fopen('php://stderr', 'wb');
 
         if (!is_resource($resource)) {
             throw new UnexpectedValueException('fopen');

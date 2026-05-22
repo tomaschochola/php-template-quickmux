@@ -1,6 +1,9 @@
 networks:
   devcontainer:
     internal: false
+volumes:
+  composer-cache:
+  npm-cache:
 services:
   devcontainer:
     build:
@@ -19,6 +22,8 @@ services:
         condition: 'service_healthy'
     environment:
       APP_ENV: 'local'
+      COMPOSER_CACHE_DIR: '/home/devcontainer/.composer/cache'
+      NPM_CONFIG_CACHE: '/home/devcontainer/.npm'
       NODE_ENV: 'development'
       ORACLE_DATABASE: 'FREEPDB1'
       ORACLE_HOST: 'oracle'
@@ -33,9 +38,11 @@ services:
       - 'valkey'
     secrets:
       - 'oracle_pwd'
-    user: 'devcontainer'
+    user: 'devcontainer:devcontainer'
     volumes:
       - './:/var/www/html'
+      - 'composer-cache:/home/devcontainer/.composer/cache'
+      - 'npm-cache:/home/devcontainer/.npm'
   nginx:
     ports:
       - '8080:8080'

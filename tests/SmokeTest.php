@@ -24,29 +24,30 @@ use function uniqid;
 
 /**
  * @internal
+ *
  * @no-named-arguments
  */
-#[CoversNothing]
-#[Small]
+#[CoversNothing()]
+#[Small()]
 class SmokeTest extends TestCase
 {
-    #[Test]
-    public function testHealtzLive(): void
+    #[Test()]
+    public function healtzLive(): void
     {
         $response = $this->handle($this->createServerRequest('GET', '/healthz/live'));
 
         self::assertSame(200, $response->getStatusCode());
     }
 
-    #[DoesNotPerformAssertions]
-    #[Test]
-    public function testMigrate(): void
+    #[DoesNotPerformAssertions()]
+    #[Test()]
+    public function migrates(): void
     {
         $this->migrate();
     }
 
-    #[Test]
-    public function testNotFound(): void
+    #[Test()]
+    public function notFound(): void
     {
         $response = $this->handle($this->createServerRequest('GET', '/' . uniqid('notfound')));
 

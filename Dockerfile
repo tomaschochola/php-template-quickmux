@@ -5,8 +5,9 @@ FROM php:8.5-fpm-trixie AS versionedphp
 FROM nginxinc/nginx-unprivileged:1-trixie AS versionednginx
 FROM container-registry.oracle.com/database/free:latest AS versionedoracle
 FROM valkey/valkey:9-trixie AS versionedvalkey
+FROM busybox:latest AS versionedbusybox
 
-FROM busybox:latest AS instantclient
+FROM versionedbusybox AS instantclient
 ADD --checksum=sha256:d6715e404a35b3a538280b78df6f7ee59da83a9d36b596218fd264051db977f3 https://download.oracle.com/otn_software/linux/instantclient/2326100/instantclient-basic-linux.x64-23.26.1.0.0.zip /tmp/instantclient-basic.zip
 ADD --checksum=sha256:2d7ef8ec14c3e0240221620c12ce94d047092c9065171db17778cce7b1fdd5db https://download.oracle.com/otn_software/linux/instantclient/2326100/instantclient-sdk-linux.x64-23.26.1.0.0.zip /tmp/instantclient-sdk.zip
 RUN <<EOF
@@ -83,11 +84,12 @@ RUN <<EOF
 EOF
 
 FROM base AS php
-COPY --from=vendor /app/composer* ./
-COPY --from=vendor /app/vendor ./vendor
-COPY ./index.php ./index.php
-COPY ./src ./src
-COPY ./bin ./bin
+COPY --chown=www-data:www-data --from=vendor /app/composer* ./
+COPY --chown=www-data:www-data --from=vendor /app/vendor ./vendor
+COPY --chown=www-data:www-data ./index.php ./index.php
+COPY --chown=www-data:www-data ./src ./src
+COPY --chown=www-data:www-data ./bin ./bin
+USER www-data
 RUN <<EOF
   set -euo pipefail
   composer dump-autoload --no-plugins --no-scripts --no-dev --classmap-authoritative --strict-psr --strict-ambiguous
@@ -98,18 +100,45 @@ RUN <<EOF
 EOF
 COPY ./ops/php/z.ini /usr/local/etc/php/conf.d/z.ini
 COPY ./ops/php/zz.ini /usr/local/etc/php/conf.d/zz.ini
-COPY ./ops/php/entrypoint.sh /usr/local/bin/docker-php-entrypoint
+COPY --chmod=755 ./ops/php/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 
 FROM versionednginx AS nginx
+USER root
 WORKDIR /var/www/html
 COPY ./ops/nginx /etc/nginx
-COPY ./public ./
+COPY --chown=nginx:nginx ./public ./
 RUN <<EOF
 	set -euo pipefail
+	apt-get update -y
+	apt-get upgrade -y --no-install-recommends
 	openssl req -x509 -newkey rsa:4096 -nodes -sha256 -keyout /etc/nginx/snakeoil.key -out /etc/nginx/snakeoil.pem -days 3650 -subj "/CN=localhost" -addext "subjectAltName=DNS:*.localhost,DNS:localhost"
+	apt-get autoremove -y
+	apt-get autoclean -y
+	apt-get clean -y
+	rm -rf /var/lib/apt/lists/*
 EOF
+USER nginx
 
 FROM versionedoracle AS oracle
+USER root
+RUN <<EOF
+  set -euo pipefail
+  mkdir -p /etc/dnf/vars
+  : > /etc/dnf/vars/ociregion
+  dnf --setopt=timeout=30 --setopt=retries=3 upgrade -y
+  dnf clean all
+  rm -rf /var/cache/dnf /var/cache/yum
+EOF
 COPY --chmod=755 ./ops/oracle/startup/00_init.sh /opt/oracle/scripts/startup/00_init.sh
+USER oracle
 
 FROM versionedvalkey AS valkey
+RUN <<EOF
+  set -euo pipefail
+  apt-get update -y
+  apt-get upgrade -y --no-install-recommends
+  apt-get autoremove -y
+  apt-get autoclean -y
+  apt-get clean -y
+  rm -rf /var/lib/apt/lists/*
+EOF

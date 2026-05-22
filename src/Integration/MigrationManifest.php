@@ -28,7 +28,7 @@ use Traversable;
  */
 readonly class MigrationManifest implements IteratorAggregate
 {
-    #[Override]
+    #[Override()]
     public function getIterator(): Traversable
     {
         return new EmptyIterator();

@@ -51,7 +51,7 @@ services:
       nofile:
         hard: 1048576
         soft: 1048576
-    user: 'nginx'
+    user: 'nginx:nginx'
     volumes:
       - target: '/tmp'
         tmpfs:
@@ -87,7 +87,7 @@ services:
       nofile:
         hard: 1048576
         soft: 1048576
-    user: 'oracle'
+    user: 'oracle:oracle'
     volumes:
       - source: 'oracle_data'
         target: '/opt/oracle/oradata'
@@ -184,7 +184,7 @@ services:
       nofile:
         hard: 1048576
         soft: 1048576
-    user: 'valkey'
+    user: 'valkey:valkey'
     volumes:
       - source: 'valkey_data'
         target: '/data'
