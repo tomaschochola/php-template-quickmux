@@ -64,7 +64,7 @@ services:
         order: 'stop-first'
         parallelism: 1
     image: '${CI_REGISTRY_IMAGE:-oci.localhost}/oracle:${CI_COMMIT_REF_SLUG:-local}-${CI_COMMIT_SHA:-dev}'
-    user: 'oracle:oracle'
+    user: 'oracle:oinstall'
   php:
     deploy:
       mode: 'replicated'

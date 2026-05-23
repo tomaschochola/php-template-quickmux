@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace Tests;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
-use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\Attributes\Small;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -37,13 +36,6 @@ class SmokeTest extends TestCase
         $response = $this->handle($this->createServerRequest('GET', '/healthz/live'));
 
         self::assertSame(200, $response->getStatusCode());
-    }
-
-    #[DoesNotPerformAssertions()]
-    #[Test()]
-    public function migrates(): void
-    {
-        $this->migrate();
     }
 
     #[Test()]

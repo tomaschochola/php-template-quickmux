@@ -64,27 +64,18 @@ readonly class ContainerManifest implements IteratorAggregate
     public function getIterator(): Traversable
     {
         yield from self::global();
-
         yield from new EnvLoader(['APP_ENV', 'ORACLE_DATABASE', 'ORACLE_HOST', 'ORACLE_PASSWORD', 'ORACLE_USER']);
-
         yield from self::routes();
-
         yield from new IniLoader(new GlobIterator('./config/base.ini'));
-
         yield from new IniLoader(new GlobIterator('./.env.ini'));
-
         yield from new PhpLoader(new GlobIterator('./config/base.php'));
-
         yield from new PhpLoader(new GlobIterator('./.env.php'));
 
         $scope = APP_ENV::current();
 
         yield from new IniLoader(new GlobIterator('./config/' . $scope . '.ini'));
-
         yield from new IniLoader(new GlobIterator('./.env.' . $scope . '.ini'));
-
         yield from new PhpLoader(new GlobIterator('./config/' . $scope . '.php'));
-
         yield from new PhpLoader(new GlobIterator('./.env.' . $scope . '.php'));
 
         if ($scope === 'local') {
@@ -93,15 +84,10 @@ readonly class ContainerManifest implements IteratorAggregate
 
         if ($scope === 'phpunit') {
             yield from self::phpunit();
-
             yield from new EnvLoader(['ORACLE_UNIT_USER' => 'ORACLE_USER']);
-
             yield from new IniLoader(new GlobIterator('./config/phpunit.ini'));
-
             yield from new IniLoader(new GlobIterator('./.phpunit.ini'));
-
             yield from new PhpLoader(new GlobIterator('./config/phpunit.php'));
-
             yield from new PhpLoader(new GlobIterator('./.phpunit.php'));
         }
     }
@@ -112,49 +98,27 @@ readonly class ContainerManifest implements IteratorAggregate
     private static function global(): iterable
     {
         yield ServerRequestFactoryInterface::class => new SingletonResolver([Resolver::class, 'ServerRequestFactoryInterface']);
-
         yield StreamFactoryInterface::class => new SingletonResolver([Resolver::class, 'StreamFactoryInterface']);
-
         yield UriFactoryInterface::class => new SingletonResolver([Resolver::class, 'UriFactoryInterface']);
-
         yield RequestHandlerInterface::class => new SingletonResolver([Resolver::class, 'RouteRequestHandler']);
-
         yield ThrowableCatcherMiddleware::class => new SingletonResolver([Resolver::class, 'ThrowableCatcherMiddleware']);
-
         yield ResponseFactoryInterface::class => new SingletonResolver([Resolver::class, 'ResponseFactoryInterface']);
-
         yield ThrowableLoggerMiddleware::class => new SingletonResolver([Resolver::class, 'ThrowableLoggerMiddleware']);
-
         yield LoggerInterface::class => new SingletonResolver([Resolver::class, 'LoggerInterface']);
-
         yield ExporterInterface::class => new SingletonResolver([Resolver::class, 'ExporterInterface']);
-
         yield FilterInterface::class => new SingletonResolver([Resolver::class, 'FilterInterface']);
-
         yield FormatterInterface::class => new SingletonResolver([Resolver::class, 'FormatterInterface']);
-
         yield InterpolatorInterface::class => new SingletonResolver([Resolver::class, 'InterpolatorInterface']);
-
         yield WriterInterface::class => new SingletonResolver([Resolver::class, 'WriterInterface']);
-
         yield RecorderInterface::class => new SingletonResolver([Resolver::class, 'RecorderInterface']);
-
         yield ClockInterface::class => new SingletonResolver([Resolver::class, 'ClockInterface']);
-
         yield NotFoundRequestHandler::class => new SingletonResolver([Resolver::class, 'NotFoundRequestHandler']);
-
         yield OkRequestHandler::class => new SingletonResolver([Resolver::class, 'OkRequestHandler']);
-
         yield ResponseEmitterInterface::class => new SingletonResolver([Resolver::class, 'ResponseEmitterInterface']);
-
         yield ServerRequestInterface::class => new SingletonResolver([Resolver::class, 'ServerRequestInterface']);
-
         yield OracleDatabase::class => new SingletonResolver([Resolver::class, 'OracleDatabase']);
-
         yield OracleConnection::class => new SingletonResolver([Resolver::class, 'OracleConnection']);
-
         yield MigratorInterface::class => new SingletonResolver([Resolver::class, 'MigratorInterface']);
-
         yield MigrationsInterface::class => new SingletonResolver([Resolver::class, 'MigrationsInterface']);
     }
 
@@ -172,11 +136,8 @@ readonly class ContainerManifest implements IteratorAggregate
     private static function phpunit(): iterable
     {
         yield CacheInterface::class => new NullSimpleCache();
-
         yield ClockInterface::class => new FixedClock();
-
         yield FilterInterface::class => new OnlyFilter(['warning', 'error', 'critical', 'alert', 'emergency']);
-
         yield ThrowableCatcherMiddleware::class => new NullMiddleware();
     }
 

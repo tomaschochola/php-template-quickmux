@@ -87,7 +87,7 @@ services:
       nofile:
         hard: 1048576
         soft: 1048576
-    user: 'oracle:oracle'
+    user: 'oracle:oinstall'
     volumes:
       - source: 'oracle_data'
         target: '/opt/oracle/oradata'

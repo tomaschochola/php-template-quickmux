@@ -1,9 +1,14 @@
 networks:
   devcontainer:
     internal: false
-volumes:
-  composer-cache:
-  npm-cache:
+  nginx:
+    internal: false
+  oracle:
+    internal: true
+  php:
+    internal: true
+  valkey:
+    internal: true
 services:
   devcontainer:
     build:
@@ -23,13 +28,14 @@ services:
     environment:
       APP_ENV: 'local'
       COMPOSER_CACHE_DIR: '/home/devcontainer/.composer/cache'
-      NPM_CONFIG_CACHE: '/home/devcontainer/.npm'
       NODE_ENV: 'development'
+      NPM_CONFIG_CACHE: '/home/devcontainer/.npm'
       ORACLE_DATABASE: 'FREEPDB1'
       ORACLE_HOST: 'oracle'
       ORACLE_PASSWORD: '/run/secrets/oracle_pwd'
       ORACLE_UNIT_USER: 'APP_UNIT'
       ORACLE_USER: 'APP'
+    init: true
     networks:
       - 'devcontainer'
       - 'nginx'
@@ -58,3 +64,10 @@ services:
       NODE_ENV: 'development'
     volumes:
       - './:/var/www/html'
+volumes:
+  composer-cache:
+    external: true
+    name: 'tomaschochola-composer-cache'
+  npm-cache:
+    external: true
+    name: 'tomaschochola-npm-cache'
