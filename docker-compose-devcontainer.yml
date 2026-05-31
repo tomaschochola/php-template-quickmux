@@ -51,7 +51,9 @@ services:
       - 'npm-cache:/home/devcontainer/.npm'
   nginx:
     ports:
-      - '8080:8080'
+      - host_ip: '127.0.0.1'
+        protocol: 'tcp'
+        target: 8080
     volumes:
       - './:/var/www/html'
   php:
