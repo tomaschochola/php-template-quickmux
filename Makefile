@@ -28,7 +28,7 @@ test: phpunit_test
 
 .PHONY: coverage
 coverage: ./.phpunit.coverage/html
-	php -S 0.0.0.0:8000 -t ./.phpunit.coverage/html
+	php -S 0.0.0.0:61602 -t ./.phpunit.coverage/html
 
 .PHONY: audit
 audit: npm_audit composer_audit
@@ -131,7 +131,7 @@ postcreate: install migrate
 
 .PHONY: start serve server dev
 start serve server dev: ./vendor ./index.php ./composer.json ./composer.lock
-	php -S 0.0.0.0:8000 ./index.php
+	php -S 0.0.0.0:61601 ./index.php
 
 .PHONY: migrate
 migrate: ./vendor ./bin/migrate.php ./composer.json ./composer.lock
@@ -170,9 +170,20 @@ secrets: ./.secrets/oracle_pwd
 	@chmod 700 ./.secrets
 	@chmod 444 ./.secrets/oracle_pwd
 
-.PHONY: port
-port:
-	@set -o pipefail; project="$$(docker ps --filter 'label=devcontainer.local_folder=$(CURDIR)' --filter 'label=devcontainer.config_file=$(CURDIR)/.devcontainer/devcontainer.json' --format '{{.Label "com.docker.compose.project"}}' | head -n1)"; docker ps -q --filter "label=com.docker.compose.project=$$project" --filter 'label=com.docker.compose.service=nginx' | head -n1 | xargs -r -I{} docker port {} 8080/tcp | awk -F: 'NR==1 { print "http://127.0.0.1:" $$NF; ok=1 } END { exit !ok }'
+.PHONY: port ports
+port ports:
+	@printf '\033[1m%-80s\033[0m\n' 'template-php-quickmux ports'
+	@printf '%-80s\n' '--------------------------------------------------------------------------------'
+	@printf '\033[1m%-12s %-21s %-12s %-20s\033[0m\n' 'Kind' 'Host' 'Container' 'Service'
+	@printf '%-12s %-21s %-12s %-20s\n' 'nginx' '127.0.0.1:61600' '61600' 'nginx'
+	@printf '%-12s %-21s %-12s %-20s\n' 'php' '127.0.0.1:61601' '61601' 'devcontainer'
+	@printf '%-12s %-21s %-12s %-20s\n' 'coverage' '127.0.0.1:61602' '61602' 'devcontainer'
+	@printf '%-12s %-21s %-12s %-20s\n' 'php-fpm' '-' '9000' 'php'
+	@printf '%-80s\n' '--------------------------------------------------------------------------------'
+	@printf '\n\033[1mLinks\033[0m\n'
+	@printf '%s\n' 'Nginx server:    http://127.0.0.1:61600/'
+	@printf '%s\n' 'PHP dev server:  http://127.0.0.1:61601/'
+	@printf '%s\n' 'Coverage server: http://127.0.0.1:61602/'
 
 .PHONY: devcontainer
 devcontainer: precreate

@@ -42,6 +42,15 @@ services:
       - 'oracle'
       - 'php'
       - 'valkey'
+    ports:
+      - host_ip: '127.0.0.1'
+        published: 61601
+        protocol: 'tcp'
+        target: 61601
+      - host_ip: '127.0.0.1'
+        published: 61602
+        protocol: 'tcp'
+        target: 61602
     secrets:
       - 'oracle_pwd'
     user: 'devcontainer:devcontainer'
@@ -52,8 +61,9 @@ services:
   nginx:
     ports:
       - host_ip: '127.0.0.1'
+        published: 61600
         protocol: 'tcp'
-        target: 8080
+        target: 61600
     volumes:
       - './:/var/www/html'
   php:

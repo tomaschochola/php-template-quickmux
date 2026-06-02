@@ -27,7 +27,7 @@ services:
       start_period: '30s'
       test:
         - 'CMD-SHELL'
-        - 'curl -fsSL http://localhost:8080/nginx_ping | grep -q pong || exit 1'
+        - 'curl -fsSL http://localhost:61600/nginx_ping | grep -q pong || exit 1'
       timeout: '5s'
     logging:
       driver: 'json-file'
