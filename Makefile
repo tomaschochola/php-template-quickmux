@@ -7,6 +7,7 @@ SHELL := /bin/bash
 # Options
 export DEBIAN_FRONTEND := noninteractive
 export PHP_CS_FIXER_FUTURE_MODE=1
+
 # Goals
 .PHONY: commit
 commit: distclean update fix check
@@ -190,6 +191,13 @@ devcontainer: precreate
 	devcontainer up
 	devcontainer exec /bin/bash || true
 	docker ps -q --filter "label=devcontainer.local_folder=$${PWD}" | xargs -r docker stop
+
+.PHONY: prune
+prune:
+	@projects="$$(docker ps -aq --filter "label=devcontainer.local_folder=$${PWD}" | xargs -r docker inspect --format '{{ index .Config.Labels "com.docker.compose.project" }}' | sort -u)"; for project in $$projects; do docker ps -aq --filter "label=com.docker.compose.project=$$project" | xargs -r docker rm -f; done; docker ps -aq --filter "label=devcontainer.local_folder=$${PWD}" | xargs -r docker rm -f
+
+.PHONY: fresh
+fresh: prune devcontainer
 
 # Dependencies
 ./.phpunit.coverage/html:
