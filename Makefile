@@ -1,44 +1,108 @@
-# Default shell
-SHELL := /bin/bash
+# Makefile
+
+SHELL := /usr/bin/env bash
+
+GNUMAKEFLAGS ?=
+
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
+MAKEFLAGS += --no-builtin-variables
+
+.SHELLFLAGS := -Eeuo pipefail -c
+
+.DELETE_ON_ERROR:
+.SUFFIXES:
 
 # Default goal
-.DEFAULT_GOAL := never
+
+.DEFAULT_GOAL := help
 
 # Options
+
 export DEBIAN_FRONTEND := noninteractive
 export PHP_CS_FIXER_FUTURE_MODE := 1
 
 # Goals
-.PHONY: commit
-commit: distclean update fix check
+
+.PHONY: help
+.SILENT: help
+help:
+	printf '\033[1m%s\033[0m\n' "$${PWD##*/} targets"
+	printf '%s\n' '--------------------------------------------------------------------------------'
+	printf '\033[1m%-23s\033[0m  %s\n' 'help' 'Show this help.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'fix' 'Run all automatic fixers.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'check' 'Run lint, static analysis, tests, and audits.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'lint' 'Run code style checks.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'static' 'Run static analysis.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'test' 'Run tests.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'coverage' 'Run tests with coverage report generation.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'coverage_serve' 'Serve generated coverage report locally.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'audit' 'Run dependency/security audits.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'deps_install' 'Install dependencies from current lock files.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'deps_update' 'Refresh dependencies and generated lock files.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'clean' 'Remove generated build, dependency, and test artifacts.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'distclean' 'Run clean and remove generated lock files.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'eslint_fix' 'Fix JavaScript/TypeScript lint issues with ESLint.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'prettier_fix' 'Format files with Prettier.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'php_cs_fixer_fix' 'Fix PHP style issues with PHP CS Fixer.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'eslint_check' 'Check JavaScript/TypeScript with ESLint.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'prettier_check' 'Check formatting with Prettier.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'php_cs_fixer_check' 'Check PHP style with PHP CS Fixer.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'phpstan_check' 'Run PHPStan static analysis.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'phpunit_test' 'Run PHPUnit tests.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'npm_audit' 'Run npm audit at the configured severity level.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'composer_audit' 'Run Composer audit.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'composer_autoload_check' 'Validate Composer optimized autoload generation.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'npm_install' 'Install npm dependencies from package-lock.json.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'composer_install' 'Install Composer dependencies from composer.lock.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'npm_update' 'Refresh npm dependencies and package-lock.json.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'composer_update' 'Refresh Composer dependencies and composer.lock.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'precreate' 'Run pre-devcontainer setup hooks.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'postcreate' 'Run post-devcontainer setup hooks.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'start' 'Start the local development server.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'serve' 'Alias for start.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'server' 'Alias for start.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'dev' 'Alias for start.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'migrate' 'Run project migrations.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'compose_push' 'Build and push Docker Compose images.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'swarm_deploy' 'Deploy the stack to Docker Swarm.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'compose_up' 'Start the Docker Compose environment.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'compose_stop' 'Stop the Docker Compose environment.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'secrets' 'Generate local development secrets.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'port' 'Print local service ports.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'ports' 'Alias for port.'
+	printf '\033[1m%-23s\033[0m  %s\n' 'devcontainer' 'Open a devcontainer shell, then stop the container.'
 
 .PHONY: fix
-fix: eslint_fix prettier_fix php_cs_fixer_fix yq_fix
+fix: eslint_fix prettier_fix php_cs_fixer_fix
 
 .PHONY: check
-check: lint stan test audit
+check: lint static test audit
 
 .PHONY: lint
 lint: eslint_check prettier_check php_cs_fixer_check
 
-.PHONY: stan
-stan: phpstan_check
+.PHONY: static
+static: phpstan_check composer_autoload_check
 
 .PHONY: test
 test: phpunit_test
 
 .PHONY: coverage
 coverage: ./.phpunit.coverage/html
+
+.PHONY: coverage_serve
+coverage_serve: coverage
 	php -S 0.0.0.0:61602 -t ./.phpunit.coverage/html
 
 .PHONY: audit
 audit: npm_audit composer_audit
 
-.PHONY: install
-install: npm_install composer_install
+.PHONY: deps_install
+deps_install: npm_install composer_install
 
-.PHONY: update
-update: npm_update composer_update
+.PHONY: deps_update
+deps_update: npm_update composer_update
 
 .PHONY: clean
 clean:
@@ -51,38 +115,36 @@ clean:
 
 .PHONY: distclean
 distclean: clean
-	git clean -Xfd
+	rm -rf ./composer.lock
+	rm -rf ./package-lock.json
 
 .PHONY: eslint_fix
-eslint_fix: ./node_modules ./eslint.config.js
+eslint_fix: ./node_modules ./package.json ./package-lock.json ./eslint.config.js
 	npm exec --ignore-scripts -- eslint --concurrency=auto --fix .
 
 .PHONY: prettier_fix
-prettier_fix: ./node_modules ./prettier.config.js
+prettier_fix: ./node_modules ./package.json ./package-lock.json ./prettier.config.js
 	npm exec --ignore-scripts -- prettier -w .
 
 .PHONY: php_cs_fixer_fix
-php_cs_fixer_fix: ./vendor ./.php-cs-fixer.php
+php_cs_fixer_fix: ./vendor ./composer.json ./composer.lock ./.php-cs-fixer.php
 	composer exec --no-plugins --no-scripts -- php-cs-fixer fix
 
-.PHONY: yq_fix
-yq_fix:
-	find . -type f -name "*.yml" -exec yq -i 'sort_keys(..)' {} \;
 
 .PHONY: eslint_check
-eslint_check: ./node_modules ./eslint.config.js
+eslint_check: ./node_modules ./package.json ./package-lock.json ./eslint.config.js
 	npm exec --ignore-scripts -- eslint --concurrency=auto .
 
 .PHONY: prettier_check
-prettier_check: ./node_modules ./prettier.config.js
+prettier_check: ./node_modules ./package.json ./package-lock.json ./prettier.config.js
 	npm exec --ignore-scripts -- prettier -c .
 
 .PHONY: php_cs_fixer_check
-php_cs_fixer_check: ./vendor ./.php-cs-fixer.php
+php_cs_fixer_check: ./vendor ./composer.json ./composer.lock ./.php-cs-fixer.php
 	composer exec --no-plugins --no-scripts -- php-cs-fixer check
 
 .PHONY: phpstan_check
-phpstan_check: ./vendor ./phpstan.neon
+phpstan_check: ./vendor ./composer.json ./composer.lock ./phpstan.neon
 	composer exec --no-plugins --no-scripts -- phpstan analyse
 
 .PHONY: phpunit_test
@@ -98,7 +160,10 @@ composer_audit: ./vendor ./composer.json ./composer.lock
 	composer audit --no-plugins --no-scripts
 	composer check-platform-reqs --no-plugins --no-scripts
 	composer validate --no-plugins --no-scripts --strict --with-dependencies --check-lock
-	composer dump-autoload --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
+
+.PHONY: composer_autoload_check
+composer_autoload_check: ./vendor ./composer.json ./composer.lock
+	composer dump-autoload --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous --dry-run
 
 .PHONY: npm_install
 npm_install: ./package.json ./package-lock.json
@@ -124,11 +189,11 @@ composer_update: ./composer.json
 
 .PHONY: precreate
 precreate: secrets
-	docker volume create tomaschochola-composer-cache >/dev/null
-	docker volume create tomaschochola-npm-cache >/dev/null
+	docker volume create tomaschochola-composer-cache
+	docker volume create tomaschochola-npm-cache
 
 .PHONY: postcreate
-postcreate: install migrate
+postcreate: deps_install migrate
 
 .PHONY: start serve server dev
 start serve server dev: ./vendor ./index.php ./composer.json ./composer.lock
@@ -138,53 +203,42 @@ start serve server dev: ./vendor ./index.php ./composer.json ./composer.lock
 migrate: ./vendor ./bin/migrate.php ./composer.json ./composer.lock
 	php ./bin/migrate.php
 
-.PHONY: image
-image: secrets
+.PHONY: compose_push
+compose_push: secrets
 	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml build --pull --push
 
-.PHONY: trivy
-trivy: secrets
-	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml build --pull
-	@set -eo pipefail; \
-		docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml config --images | sort -u | \
-		xargs -r -n 1 docker run --rm --pull missing \
-			--mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
-			--mount type=volume,source=trivy-cache,target=/root/.cache \
-			docker.io/aquasec/trivy:latest image \
-			--exit-code 1 \
-			--severity HIGH,CRITICAL
-
-.PHONY: deploy
-deploy: secrets
+.PHONY: swarm_deploy
+swarm_deploy: secrets
 	docker stack deploy -c ./docker-compose.yml -c ./docker-compose-swarm.yml --with-registry-auth --prune --detach=false --resolve-image=always $${CI_PROJECT_PATH_SLUG:-template-php-quickmux}
 
-.PHONY: up
-up: secrets
+.PHONY: compose_up
+compose_up: secrets
 	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml up --build --remove-orphans --always-recreate-deps --force-recreate --pull=always --renew-anon-volumes
 
-.PHONY: stop
-stop:
+.PHONY: compose_stop
+compose_stop:
 	docker compose -f ./docker-compose.yml -f ./docker-compose-swarm.yml stop
 
 .PHONY: secrets
 secrets: ./.secrets/oracle_pwd
-	@chmod 700 ./.secrets
-	@chmod 444 ./.secrets/oracle_pwd
+	chmod 700 ./.secrets
+	chmod 444 ./.secrets/oracle_pwd
 
 .PHONY: port ports
+.SILENT: port ports
 port ports:
-	@printf '\033[1m%-80s\033[0m\n' 'template-php-quickmux ports'
-	@printf '%-80s\n' '--------------------------------------------------------------------------------'
-	@printf '\033[1m%-12s %-21s %-12s %-20s\033[0m\n' 'Kind' 'Host' 'Container' 'Service'
-	@printf '%-12s %-21s %-12s %-20s\n' 'nginx' '127.0.0.1:61600' '61600' 'nginx'
-	@printf '%-12s %-21s %-12s %-20s\n' 'php' '127.0.0.1:61601' '61601' 'devcontainer'
-	@printf '%-12s %-21s %-12s %-20s\n' 'coverage' '127.0.0.1:61602' '61602' 'devcontainer'
-	@printf '%-12s %-21s %-12s %-20s\n' 'php-fpm' '-' '9000' 'php'
-	@printf '%-80s\n' '--------------------------------------------------------------------------------'
-	@printf '\n\033[1mLinks\033[0m\n'
-	@printf '%s\n' 'Nginx server:    http://127.0.0.1:61600/'
-	@printf '%s\n' 'PHP dev server:  http://127.0.0.1:61601/'
-	@printf '%s\n' 'Coverage server: http://127.0.0.1:61602/'
+	printf '\033[1m%-80s\033[0m\n' 'template-php-quickmux ports'
+	printf '%-80s\n' '--------------------------------------------------------------------------------'
+	printf '\033[1m%-12s %-21s %-12s %-20s\033[0m\n' 'Kind' 'Host' 'Container' 'Service'
+	printf '%-12s %-21s %-12s %-20s\n' 'nginx' '127.0.0.1:61600' '61600' 'nginx'
+	printf '%-12s %-21s %-12s %-20s\n' 'php' '127.0.0.1:61601' '61601' 'devcontainer'
+	printf '%-12s %-21s %-12s %-20s\n' 'coverage' '127.0.0.1:61602' '61602' 'devcontainer'
+	printf '%-12s %-21s %-12s %-20s\n' 'php-fpm' '-' '9000' 'php'
+	printf '%-80s\n' '--------------------------------------------------------------------------------'
+	printf '\n\033[1mLinks\033[0m\n'
+	printf '%s\n' 'Nginx server:    http://127.0.0.1:61600/'
+	printf '%s\n' 'PHP dev server:  http://127.0.0.1:61601/'
+	printf '%s\n' 'Coverage server: http://127.0.0.1:61602/'
 
 .PHONY: devcontainer
 devcontainer: precreate
@@ -192,24 +246,18 @@ devcontainer: precreate
 	devcontainer exec /bin/bash || true
 	docker ps -q --filter "label=devcontainer.local_folder=$${PWD}" | xargs -r docker stop
 
-.PHONY: prune
-prune:
-	@projects="$$(docker ps -aq --filter "label=devcontainer.local_folder=$${PWD}" | xargs -r docker inspect --format '{{ index .Config.Labels "com.docker.compose.project" }}' | sort -u)"; for project in $$projects; do docker ps -aq --filter "label=com.docker.compose.project=$$project" | xargs -r docker rm -f; done; docker ps -aq --filter "label=devcontainer.local_folder=$${PWD}" | xargs -r docker rm -f
-
-.PHONY: fresh
-fresh: prune devcontainer
-
 # Dependencies
+
 ./.phpunit.coverage/html:
 	${MAKE} phpunit_test
 
-./composer.lock ./vendor: ./composer.json
+./composer.lock ./vendor &: ./composer.json
 	${MAKE} composer_update
 
-./package-lock.json ./node_modules: ./package.json
+./package-lock.json ./node_modules &: ./package.json
 	${MAKE} npm_update
 
 ./.secrets/oracle_pwd:
-	@install -d -m 700 ./.secrets
-	@openssl rand -hex 16 > "$@"
-	@chmod 444 "$@"
+	install -d -m 700 ./.secrets
+	openssl rand -hex 16 > "$@"
+	chmod 444 "$@"
