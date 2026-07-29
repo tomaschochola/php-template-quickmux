@@ -14,64 +14,24 @@ MAKEFLAGS += --no-builtin-variables
 .SUFFIXES:
 .NOTPARALLEL:
 
+DEVCONTAINER_PROJECT := template-php-quickmux-devcontainer
+DEVCONTAINER_FILTER := label=com.docker.compose.project=$(DEVCONTAINER_PROJECT)
+
 # Default goal
 
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := never
+
+.PHONY: never
+.SILENT: never
+never:
+	printf '%s\n' 'No default target. Run an explicit target' >&2
+	exit 1
 
 # Options
 
 export PHP_CS_FIXER_FUTURE_MODE := 1
 
 # Goals
-
-.PHONY: help
-.SILENT: help
-help:
-	printf '\033[1m%s\033[0m\n' "$${PWD##*/} targets"
-	printf '%s\n' '--------------------------------------------------------------------------------'
-	printf '\033[1m%-23s\033[0m  %s\n' 'help' 'Show this help.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'fix' 'Run all automatic fixers.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'check' 'Run lint, static analysis, tests, and audits.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'lint' 'Run code style checks.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'static' 'Run static analysis.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'test' 'Run tests.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'coverage' 'Run tests with coverage report generation.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'coverage_serve' 'Serve generated coverage report locally.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'audit' 'Run dependency/security audits.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'deps_install' 'Install dependencies from current lock files.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'deps_update' 'Refresh dependencies and generated lock files.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'clean' 'Remove generated build, dependency, and test artifacts.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'distclean' 'Run clean and remove generated lock files.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'eslint_fix' 'Fix JavaScript/TypeScript lint issues with ESLint.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'prettier_fix' 'Format files with Prettier.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'php_cs_fixer_fix' 'Fix PHP style issues with PHP CS Fixer.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'eslint_check' 'Check JavaScript/TypeScript with ESLint.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'prettier_check' 'Check formatting with Prettier.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'php_cs_fixer_check' 'Check PHP style with PHP CS Fixer.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'phpstan_check' 'Run PHPStan static analysis.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'phpunit_test' 'Run PHPUnit tests.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'npm_audit' 'Run npm audit at the configured severity level.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'composer_audit' 'Run Composer audit.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'composer_autoload_check' 'Validate Composer optimized autoload generation.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'npm_install' 'Install npm dependencies from package-lock.json.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'composer_install' 'Install Composer dependencies from composer.lock.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'npm_update' 'Refresh npm dependencies and package-lock.json.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'composer_update' 'Refresh Composer dependencies and composer.lock.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'precreate' 'Run pre-devcontainer setup hooks.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'postcreate' 'Run post-devcontainer setup hooks.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'start' 'Start the local development server.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'serve' 'Alias for start.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'server' 'Alias for start.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'dev' 'Alias for start.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'migrate' 'Run project migrations.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'compose_push' 'Build and push Docker Compose images.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'swarm_deploy' 'Deploy the stack to Docker Swarm.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'compose_up' 'Start the Docker Compose environment.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'compose_stop' 'Stop the Docker Compose environment.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'secrets' 'Generate local development secrets.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'port' 'Print local service ports.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'ports' 'Alias for port.'
-	printf '\033[1m%-23s\033[0m  %s\n' 'devcontainer' 'Open a devcontainer shell, then stop the container.'
 
 .PHONY: fix
 fix: eslint_fix prettier_fix php_cs_fixer_fix
@@ -110,13 +70,17 @@ clean:
 	rm -rf ./.phpunit.cache
 	rm -rf ./.phpunit.coverage
 	rm -rf ./.phpunit.result.cache
+
+.PHONY: deps_clean
+deps_clean:
 	rm -rf ./node_modules
 	rm -rf ./vendor
 
 .PHONY: distclean
-distclean: clean
-	rm -rf ./composer.lock
-	rm -rf ./package-lock.json
+distclean: clean deps_clean
+
+.PHONY: nuke
+nuke: distclean data_reset
 
 .PHONY: eslint_fix
 eslint_fix: ./node_modules ./package.json ./package-lock.json ./eslint.config.js
@@ -166,7 +130,7 @@ composer_autoload_check: ./vendor ./composer.json ./composer.lock
 
 .PHONY: npm_install
 npm_install: ./package.json ./package-lock.json
-	npm install --ignore-scripts --install-links --include=prod --include=dev --include=peer --include=optional
+	npm ci --ignore-scripts --install-links --include=prod --include=dev --include=peer --include=optional
 
 .PHONY: composer_install
 composer_install: ./composer.json ./composer.lock
@@ -176,13 +140,11 @@ composer_install: ./composer.json ./composer.lock
 .PHONY: npm_update
 npm_update: ./package.json
 	rm -rf ./node_modules
-	rm -rf ./package-lock.json
 	npm update --ignore-scripts --install-links --include=prod --include=dev --include=peer --include=optional
 
 .PHONY: composer_update
 composer_update: ./composer.json
 	rm -rf ./vendor
-	rm -rf ./composer.lock
 	composer update --no-plugins --no-scripts --no-autoloader --with-all-dependencies
 	composer dump-autoload --no-plugins --no-scripts --optimize --strict-psr --strict-ambiguous
 
@@ -223,38 +185,52 @@ secrets: ./.secrets/oracle_pwd
 	chmod 700 ./.secrets
 	chmod 444 ./.secrets/oracle_pwd
 
-.PHONY: port ports
-.SILENT: port ports
-port ports:
-	printf '\033[1m%-80s\033[0m\n' 'template-php-quickmux ports'
-	printf '%-80s\n' '--------------------------------------------------------------------------------'
-	printf '\033[1m%-12s %-21s %-12s %-20s\033[0m\n' 'Kind' 'Host' 'Container' 'Service'
-	printf '%-12s %-21s %-12s %-20s\n' 'nginx' '127.0.0.1:61600' '61600' 'nginx'
-	printf '%-12s %-21s %-12s %-20s\n' 'php' '127.0.0.1:61601' '61601' 'devcontainer'
-	printf '%-12s %-21s %-12s %-20s\n' 'coverage' '127.0.0.1:61602' '61602' 'devcontainer'
-	printf '%-12s %-21s %-12s %-20s\n' 'php-fpm' '-' '9000' 'php'
-	printf '%-80s\n' '--------------------------------------------------------------------------------'
-	printf '\n\033[1mLinks\033[0m\n'
-	printf '%s\n' 'Nginx server:    http://127.0.0.1:61600/'
-	printf '%s\n' 'PHP dev server:  http://127.0.0.1:61601/'
-	printf '%s\n' 'Coverage server: http://127.0.0.1:61602/'
-
 .PHONY: devcontainer
-devcontainer: precreate
+devcontainer:
 	devcontainer up --workspace-folder .
-	devcontainer exec --workspace-folder . /bin/bash || true
-	docker ps -q --filter "label=devcontainer.local_folder=$${PWD}" | xargs -r docker stop
+	devcontainer exec --workspace-folder . /bin/bash
+
+.PHONY: status
+status:
+	docker container ls --all --filter "$(DEVCONTAINER_FILTER)"
+	docker volume ls --filter "$(DEVCONTAINER_FILTER)"
+	docker network ls --filter "$(DEVCONTAINER_FILTER)"
+
+.PHONY: stop
+stop:
+	docker container ls --quiet --filter "$(DEVCONTAINER_FILTER)" | while IFS= read -r container; do docker container stop "$$container"; done
+
+.PHONY: restart
+restart:
+	docker container ls --all --quiet --filter "$(DEVCONTAINER_FILTER)" | while IFS= read -r container; do docker container restart "$$container"; done
+
+.PHONY: down
+down: stop
+	docker container ls --all --quiet --filter "$(DEVCONTAINER_FILTER)" | while IFS= read -r container; do docker container rm --force --volumes "$$container"; done
+	docker network ls --quiet --filter "$(DEVCONTAINER_FILTER)" | while IFS= read -r network; do docker network rm "$$network"; done
+
+.PHONY: rebuild
+rebuild: down
+	devcontainer up --workspace-folder .
+
+.PHONY: rebuild_no_cache
+rebuild_no_cache: down
+	devcontainer up --workspace-folder . --build-no-cache
+
+.PHONY: data_reset
+data_reset: down
+	docker volume ls --quiet --filter "$(DEVCONTAINER_FILTER)" | while IFS= read -r volume; do docker volume rm "$$volume"; done
 
 # Dependencies
 
 ./.phpunit.coverage/html:
 	${MAKE} phpunit_test
 
-./composer.lock ./vendor &: ./composer.json
-	${MAKE} composer_update
+./vendor: ./composer.json ./composer.lock
+	${MAKE} composer_install
 
-./package-lock.json ./node_modules &: ./package.json
-	${MAKE} npm_update
+./node_modules: ./package.json ./package-lock.json
+	${MAKE} npm_install
 
 ./.secrets/oracle_pwd:
 	install -d -m 700 ./.secrets

@@ -1,3 +1,4 @@
+name: 'template-php-quickmux-devcontainer'
 networks:
   devcontainer:
     internal: false
