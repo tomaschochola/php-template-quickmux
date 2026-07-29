@@ -20,7 +20,6 @@ MAKEFLAGS += --no-builtin-variables
 
 # Options
 
-export DEBIAN_FRONTEND := noninteractive
 export PHP_CS_FIXER_FUTURE_MODE := 1
 
 # Goals
@@ -242,8 +241,8 @@ port ports:
 
 .PHONY: devcontainer
 devcontainer: precreate
-	devcontainer up
-	devcontainer exec /bin/bash || true
+	devcontainer up --workspace-folder .
+	devcontainer exec --workspace-folder . /bin/bash || true
 	docker ps -q --filter "label=devcontainer.local_folder=$${PWD}" | xargs -r docker stop
 
 # Dependencies
