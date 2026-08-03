@@ -17,6 +17,7 @@ namespace Src\Integration;
 
 use LogicException;
 use NoDiscard;
+use Pdo\Mysql;
 use Psr\Clock\ClockInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -30,10 +31,11 @@ use Psr\Log\LoggerInterface;
 use TomasChochola\Migrations\MigrationsInterface;
 use TomasChochola\Migrations\Migrator;
 use TomasChochola\Migrations\MigratorInterface;
-use TomasChochola\Migrations\Oracle\Database\OracleMigrations;
-use TomasChochola\Oracle\Database\OracleConnection;
-use TomasChochola\Oracle\Database\OracleDatabase;
-use TomasChochola\Oracle\Database\OracleSettingsFactory;
+use TomasChochola\Migrations\Mysql\MysqlMigrations;
+use TomasChochola\Pdo\Mysql\MysqlFactory;
+use TomasChochola\Pdo\Mysql\MysqlQuery;
+use TomasChochola\Pdo\Mysql\MysqlSettingsFactory;
+use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Clock\NowClock;
 use TomasChochola\Psr\Http\Factory\CgiServerRequestFactory;
 use TomasChochola\Psr\Http\Factory\ResponseFactory;
@@ -65,13 +67,11 @@ use TomasChochola\Psr\Log\WriterInterface;
 use UnexpectedValueException;
 
 use function assert;
-use function file_get_contents;
 use function fopen;
 use function is_resource;
 use function is_string;
-use function mb_trim;
 
-use const OCI_DEFAULT;
+use const PHP_SAPI;
 
 /**
  * @no-named-arguments
@@ -140,13 +140,13 @@ readonly class Resolver
     #[NoDiscard()]
     public static function MigrationsInterface(ContainerInterface $container): MigrationsInterface
     {
-        $oracle = $container->get(OracleConnection::class);
+        $query = $container->get(QueryInterface::class);
         $logger = $container->get(LoggerInterface::class);
 
-        assert($oracle instanceof OracleConnection);
+        assert($query instanceof QueryInterface);
         assert($logger instanceof LoggerInterface);
 
-        return new OracleMigrations($oracle, $logger);
+        return new MysqlMigrations($query, $logger);
     }
 
     #[NoDiscard()]
@@ -159,6 +159,31 @@ readonly class Resolver
         assert($migrations instanceof MigrationsInterface);
 
         return new Migrator($logger, $migrations);
+    }
+
+    #[NoDiscard()]
+    public static function Mysql(ContainerInterface $container): Mysql
+    {
+        $host = $container->get('MYSQL_HOST');
+        $database = $container->get('MYSQL_DATABASE');
+        $user = $container->get('MYSQL_USER');
+        $passwordFile = $container->get('MYSQL_PASSWORD_FILE');
+
+        if (!is_string($host) || !is_string($database) || !is_string($user) || !is_string($passwordFile)) {
+            throw new UnexpectedValueException('mysql settings');
+        }
+
+        $settings = (new MysqlSettingsFactory())->createFrom([
+            'host' => $host,
+            'port' => '',
+            'dbname' => $database,
+            'socket' => '',
+            'username' => $user,
+            'password' => $passwordFile,
+            'options' => [],
+        ]);
+
+        return (new MysqlFactory())->create($settings);
     }
 
     #[NoDiscard()]
@@ -182,42 +207,13 @@ readonly class Resolver
     }
 
     #[NoDiscard()]
-    public static function OracleConnection(ContainerInterface $container): OracleConnection
+    public static function QueryInterface(ContainerInterface $container): QueryInterface
     {
-        $database = $container->get(OracleDatabase::class);
+        $mysql = $container->get(Mysql::class);
 
-        assert($database instanceof OracleDatabase);
+        assert($mysql instanceof Mysql);
 
-        return $database->connect();
-    }
-
-    #[NoDiscard()]
-    public static function OracleDatabase(ContainerInterface $container): OracleDatabase
-    {
-        $host = $container->get('ORACLE_HOST');
-        $database = $container->get('ORACLE_DATABASE');
-        $user = $container->get('ORACLE_USER');
-        $passwordFile = $container->get('ORACLE_PASSWORD');
-
-        if (!is_string($host) || !is_string($database) || !is_string($user) || !is_string($passwordFile)) {
-            throw new UnexpectedValueException('oracle settings');
-        }
-
-        $password = file_get_contents($passwordFile);
-
-        if (!is_string($password)) {
-            throw new UnexpectedValueException('file_get_contents');
-        }
-
-        $settings = (new OracleSettingsFactory())->createFrom([
-            'username' => $user,
-            'password' => mb_trim($password),
-            'connectionString' => '//' . $host . '/' . $database,
-            'encoding' => 'AL32UTF8',
-            'sessionMode' => OCI_DEFAULT,
-        ]);
-
-        return new OracleDatabase($settings);
+        return new MysqlQuery($mysql);
     }
 
     #[NoDiscard()]
@@ -274,6 +270,18 @@ readonly class Resolver
         $factory = $container->get(ServerRequestFactoryInterface::class);
 
         assert($factory instanceof ServerRequestFactoryInterface);
+
+        if (PHP_SAPI === 'cli-server') {
+            $method = $_SERVER['REQUEST_METHOD'] ?? null;
+            $uri = $_SERVER['REQUEST_URI'] ?? null;
+            $host = $_SERVER['HTTP_HOST'] ?? null;
+
+            if (!is_string($method) || !is_string($uri) || !is_string($host)) {
+                throw new UnexpectedValueException('server settings');
+            }
+
+            return $factory->createServerRequest($method, 'http://' . $host . $uri, $_SERVER);
+        }
 
         return (new CgiServerRequestFactory($factory))->create();
     }

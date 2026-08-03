@@ -45,7 +45,6 @@
   "minimum-stability": "dev",
   "name": "tomaschochola/template-php-quickmux",
   "prefer-stable": true,
-  "readme": "./README.md",
   "repositories": [
     {
       "no-api": true,
@@ -100,12 +99,12 @@
     {
       "no-api": true,
       "type": "git",
-      "url": "https://github.com/tomaschochola/php-migrations-oracle-database.git"
+      "url": "https://github.com/tomaschochola/php-migrations-mysql.git"
     },
     {
       "no-api": true,
       "type": "git",
-      "url": "https://github.com/tomaschochola/php-oracle-database.git"
+      "url": "https://github.com/tomaschochola/php-database-mysql.git"
     },
     {
       "no-api": true,
@@ -131,12 +130,13 @@
   "require": {
     "ext-apcu": "*",
     "ext-mbstring": "*",
-    "ext-oci8": "*",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
     "php": "^8.5.0",
+    "tomaschochola/php-database-mysql": "^1.0@dev",
     "tomaschochola/php-loaders": "^1.0@dev",
     "tomaschochola/php-migrations": "^1.0@dev",
-    "tomaschochola/php-migrations-oracle-database": "^1.0@dev",
-    "tomaschochola/php-oracle-database": "^1.0@dev",
+    "tomaschochola/php-migrations-mysql": "^1.0@dev",
     "tomaschochola/php-psr-11-container": "^1.0@dev",
     "tomaschochola/php-psr-15-request-handlers": "^1.0@dev",
     "tomaschochola/php-psr-16-simple-cache": "^1.0@dev",

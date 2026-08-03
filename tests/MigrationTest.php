@@ -18,10 +18,7 @@ namespace Tests;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Medium;
 use PHPUnit\Framework\Attributes\Test;
-use TomasChochola\Oracle\Database\OracleConnection;
-use UnexpectedValueException;
-
-use function is_string;
+use TomasChochola\Pdo\QueryInterface;
 
 /**
  * @internal
@@ -37,28 +34,14 @@ class MigrationTest extends TestCase
     {
         $this->migrate();
 
-        $statement = $this->resolve(OracleConnection::class)->parse(
+        $count = $this->resolve(QueryInterface::class)->int(
             <<<'SQL'
-                SELECT COUNT(*) AS COUNT_NUMBER
-                FROM user_tables
-                WHERE table_name = 'MIGRATIONS'
+                SELECT COUNT(*)
+                FROM information_schema.tables
+                WHERE table_schema = DATABASE() AND table_name = 'migrations'
                 SQL,
         );
 
-        $statement->execute();
-
-        $row = $statement->fetchAssoc();
-
-        if ($row === null) {
-            throw new UnexpectedValueException('$row');
-        }
-
-        $count = $row['COUNT_NUMBER'] ?? null;
-
-        if (!is_string($count)) {
-            throw new UnexpectedValueException('$count');
-        }
-
-        self::assertSame('1', $count);
+        self::assertSame(1, $count);
     }
 }

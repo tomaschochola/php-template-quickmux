@@ -18,6 +18,7 @@ namespace Src\Integration;
 use GlobIterator;
 use IteratorAggregate;
 use Override;
+use Pdo\Mysql;
 use Psr\Clock\ClockInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
@@ -32,8 +33,7 @@ use TomasChochola\Loaders\IniLoader;
 use TomasChochola\Loaders\PhpLoader;
 use TomasChochola\Migrations\MigrationsInterface;
 use TomasChochola\Migrations\MigratorInterface;
-use TomasChochola\Oracle\Database\OracleConnection;
-use TomasChochola\Oracle\Database\OracleDatabase;
+use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Clock\FixedClock;
 use TomasChochola\Psr\Container\SingletonResolver;
 use TomasChochola\Psr\Http\RequestHandlers\NotFoundRequestHandler;
@@ -64,7 +64,7 @@ readonly class ContainerManifest implements IteratorAggregate
     public function getIterator(): Traversable
     {
         yield from self::global();
-        yield from new EnvLoader(['APP_ENV', 'ORACLE_DATABASE', 'ORACLE_HOST', 'ORACLE_PASSWORD', 'ORACLE_USER']);
+        yield from new EnvLoader(['APP_ENV', 'MYSQL_DATABASE', 'MYSQL_HOST', 'MYSQL_PASSWORD_FILE', 'MYSQL_USER']);
         yield from self::routes();
         yield from new IniLoader(new GlobIterator('./config/base.ini'));
         yield from new IniLoader(new GlobIterator('./.env.ini'));
@@ -84,7 +84,7 @@ readonly class ContainerManifest implements IteratorAggregate
 
         if ($scope === 'phpunit') {
             yield from self::phpunit();
-            yield from new EnvLoader(['ORACLE_UNIT_USER' => 'ORACLE_USER']);
+            yield from new EnvLoader(['MYSQL_ROOT_PASSWORD_FILE' => 'MYSQL_PASSWORD_FILE']);
             yield from new IniLoader(new GlobIterator('./config/phpunit.ini'));
             yield from new IniLoader(new GlobIterator('./.phpunit.ini'));
             yield from new PhpLoader(new GlobIterator('./config/phpunit.php'));
@@ -116,8 +116,8 @@ readonly class ContainerManifest implements IteratorAggregate
         yield OkRequestHandler::class => new SingletonResolver([Resolver::class, 'OkRequestHandler']);
         yield ResponseEmitterInterface::class => new SingletonResolver([Resolver::class, 'ResponseEmitterInterface']);
         yield ServerRequestInterface::class => new SingletonResolver([Resolver::class, 'ServerRequestInterface']);
-        yield OracleDatabase::class => new SingletonResolver([Resolver::class, 'OracleDatabase']);
-        yield OracleConnection::class => new SingletonResolver([Resolver::class, 'OracleConnection']);
+        yield Mysql::class => new SingletonResolver([Resolver::class, 'Mysql']);
+        yield QueryInterface::class => new SingletonResolver([Resolver::class, 'QueryInterface']);
         yield MigratorInterface::class => new SingletonResolver([Resolver::class, 'MigratorInterface']);
         yield MigrationsInterface::class => new SingletonResolver([Resolver::class, 'MigrationsInterface']);
     }
@@ -135,6 +135,8 @@ readonly class ContainerManifest implements IteratorAggregate
      */
     private static function phpunit(): iterable
     {
+        yield 'MYSQL_DATABASE' => '';
+        yield 'MYSQL_USER' => 'root';
         yield CacheInterface::class => new NullSimpleCache();
         yield ClockInterface::class => new FixedClock();
         yield FilterInterface::class => new OnlyFilter(['warning', 'error', 'critical', 'alert', 'emergency']);
