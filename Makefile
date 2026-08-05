@@ -66,9 +66,9 @@ deps_update: npm_update composer_update
 .PHONY: clean
 clean:
 	rm -rf ./.php-cs-fixer.cache
+	rm -rf ./.phpstan.cache
 	rm -rf ./.phpunit.cache
 	rm -rf ./.phpunit.coverage
-	rm -rf ./.phpunit.result.cache
 
 .PHONY: deps_clean
 deps_clean: npm_deps_clean composer_deps_clean
@@ -167,8 +167,8 @@ composer_update: composer_deps_clean ./composer.json
 postcreate: deps_install migrate
 
 .PHONY: start serve server dev
-start serve server dev: ./vendor/autoload.php ./index.php ./composer.json ./composer.lock
-	php -S 0.0.0.0:8000 ./index.php
+start serve server dev: ./vendor/autoload.php ./public/index.php ./composer.json ./composer.lock
+	php -S 0.0.0.0:8000 -t ./public
 
 .PHONY: migrate
 migrate: ./vendor/autoload.php ./bin/migrate.php ./composer.json ./composer.lock

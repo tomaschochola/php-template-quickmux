@@ -5,6 +5,7 @@ parameters:
   paths:
     - ./.php-cs-fixer.php
     - ./bin
-    - ./index.php
+    - ./public
     - ./src
     - ./tests
+  tmpDir: ./.phpstan.cache

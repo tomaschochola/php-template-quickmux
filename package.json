@@ -15,10 +15,10 @@
       "url": "https://github.com/tomaschochola"
     }
   ],
-  "description": "@tomaschochola/template-php-quickmux",
+  "description": "Quickmux application template with explicit integration, MySQL migrations, and PSR implementations.",
   "devDependencies": {
-    "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#1.x",
-    "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#1.x",
+    "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#2.x",
+    "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#2.x",
     "@tomaschochola/tooling-trimmer": "github:tomaschochola/tooling-trimmer#2.x"
   },
   "funding": {
@@ -28,16 +28,18 @@
   "homepage": "https://github.com/tomaschochola/template-php-quickmux",
   "keywords": [
     "tomaschochola",
-    "TomasChochola",
-    "Tomas Chochola",
-    "Tomáš Chochola",
-    "template-php-quickmux"
+    "application",
+    "microservice",
+    "quickmux",
+    "template"
   ],
   "license": "CC-BY-ND-4.0",
   "name": "@tomaschochola/template-php-quickmux",
   "private": true,
-  "repository": "github:tomaschochola/template-php-quickmux",
-  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomaschochola/template-php-quickmux.git"
+  },
   "type": "module",
   "version": "0.0.0"
 }

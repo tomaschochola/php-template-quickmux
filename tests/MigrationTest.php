@@ -27,7 +27,7 @@ use TomasChochola\Pdo\QueryInterface;
  */
 #[CoversNothing()]
 #[Medium()]
-class MigrationTest extends TestCase
+final class MigrationTest extends TestCase
 {
     #[Test()]
     public function migrates(): void

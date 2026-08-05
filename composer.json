@@ -4,29 +4,39 @@
       "email": "tomaschochola@tomaschochola.cz",
       "homepage": "https://github.com/tomaschochola",
       "name": "Tomáš Chochola",
-      "role": "Author"
+      "role": "Enterprise Architect"
     }
   ],
   "autoload": {
     "psr-4": {
-      "Src\\": "./src"
+      "Src\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\": "./tests"
+      "Tests\\": "tests/"
     }
   },
   "config": {
     "allow-plugins": false,
-    "audit": {
-      "abandoned": "fail"
-    },
     "platform-check": true,
-    "process-timeout": 0,
+    "policy": {
+      "abandoned": {
+        "audit": "fail",
+        "block": true
+      },
+      "advisories": {
+        "audit": "fail",
+        "block": true
+      },
+      "malware": {
+        "audit": "fail",
+        "block": true
+      }
+    },
     "sort-packages": true
   },
-  "description": "tomaschochola/template-php-quickmux",
+  "description": "Quickmux application template with explicit integration, MySQL migrations, and PSR implementations.",
   "funding": [
     {
       "type": "github",
@@ -36,95 +46,94 @@
   "homepage": "https://github.com/tomaschochola/template-php-quickmux",
   "keywords": [
     "tomaschochola",
-    "TomasChochola",
-    "Tomas Chochola",
-    "Tomáš Chochola",
-    "template-php-quickmux"
+    "application",
+    "microservice",
+    "quickmux",
+    "template"
   ],
   "license": "CC-BY-ND-4.0",
-  "minimum-stability": "dev",
   "name": "tomaschochola/template-php-quickmux",
   "prefer-stable": true,
   "repositories": [
     {
       "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/tooling-phpstan.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/tooling-php-cs-fixer.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-psr-7-http-message.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-psr-17-http-factory.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-psr-15-request-handlers.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-psr-3-logger.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-psr-20-clock.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-psr-11-container.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-loaders.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-migrations.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-migrations-mysql.git"
-    },
-    {
-      "no-api": true,
-      "type": "git",
+      "type": "vcs",
       "url": "https://github.com/tomaschochola/php-database-mysql.git"
     },
     {
       "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-psr-16-simple-cache.git"
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-loaders.git"
     },
     {
       "no-api": true,
-      "type": "git",
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-migrations-mysql.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-migrations.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-psr-11-container.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-psr-15-request-handlers.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
       "url": "https://github.com/tomaschochola/php-psr-16-simple-cache-apcu.git"
     },
     {
       "no-api": true,
-      "type": "git",
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-psr-16-simple-cache.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-psr-17-http-factory.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-psr-18-http-client-curl.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
       "url": "https://github.com/tomaschochola/php-psr-18-http-client.git"
     },
     {
       "no-api": true,
-      "type": "git",
-      "url": "https://github.com/tomaschochola/php-psr-18-http-client-curl.git"
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-psr-20-clock.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-psr-3-logger.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/php-psr-7-http-message.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/tooling-php-cs-fixer.git"
+    },
+    {
+      "no-api": true,
+      "type": "vcs",
+      "url": "https://github.com/tomaschochola/tooling-phpstan.git"
     }
   ],
   "require": {
@@ -142,6 +151,7 @@
     "tomaschochola/php-psr-16-simple-cache": "^1.0@dev",
     "tomaschochola/php-psr-16-simple-cache-apcu": "^1.0@dev",
     "tomaschochola/php-psr-17-http-factory": "^1.0@dev",
+    "tomaschochola/php-psr-18-http-client": "^1.0@dev",
     "tomaschochola/php-psr-18-http-client-curl": "^1.0@dev",
     "tomaschochola/php-psr-20-clock": "^1.0@dev",
     "tomaschochola/php-psr-3-logger": "^1.0@dev",
@@ -158,7 +168,6 @@
     "tomaschochola/tooling-phpstan": "^1.0@dev"
   },
   "support": {
-    "docs": "https://github.com/tomaschochola/template-php-quickmux",
     "email": "tomaschochola@tomaschochola.cz",
     "issues": "https://github.com/tomaschochola/template-php-quickmux/issues",
     "source": "https://github.com/tomaschochola/template-php-quickmux.git"

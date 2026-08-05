@@ -28,10 +28,10 @@ use function uniqid;
  */
 #[CoversNothing()]
 #[Small()]
-class SmokeTest extends TestCase
+final class SmokeTest extends TestCase
 {
     #[Test()]
-    public function healtzLive(): void
+    public function healthzLive(): void
     {
         $response = $this->handle($this->createServerRequest('GET', '/healthz/live'));
 

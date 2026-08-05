@@ -17,7 +17,7 @@ declare(strict_types=1);
     throw new \ErrorException($message, 0, $severity, $file, $line);
 });
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once \dirname(__DIR__) . '/vendor/autoload.php';
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
