@@ -33,7 +33,7 @@ export PHP_CS_FIXER_FUTURE_MODE := 1
 # Goals
 
 .PHONY: fix
-fix: eslint_fix prettier_fix php_cs_fixer_fix trimmer_fix
+fix: eslint_fix php_cs_fixer_fix prettier_fix trimmer_fix
 
 .PHONY: check
 check: trimmer_check composer_diagnose lint static test audit
@@ -52,7 +52,7 @@ coverage: phpunit_test
 
 .PHONY: coverage_serve
 coverage_serve: coverage
-	php -S 0.0.0.0:8000 -t ./.phpunit.coverage/html
+	php -S 0.0.0.0:61061 -t ./.phpunit.coverage/html
 
 .PHONY: audit
 audit: npm_audit composer_audit
@@ -83,9 +83,6 @@ composer_deps_clean:
 
 .PHONY: distclean
 distclean: clean deps_clean
-
-.PHONY: nuke
-nuke: distclean data_reset
 
 .PHONY: trimmer_fix
 trimmer_fix: ./node_modules/.package-lock.json ./package.json ./package-lock.json
@@ -168,7 +165,7 @@ postcreate: deps_install migrate
 
 .PHONY: start serve server dev
 start serve server dev: ./vendor/autoload.php ./public/index.php ./composer.json ./composer.lock
-	php -S 0.0.0.0:8000 -t ./public
+	php -S 0.0.0.0:61060 -t ./public
 
 .PHONY: migrate
 migrate: ./vendor/autoload.php ./bin/migrate.php ./composer.json ./composer.lock
@@ -188,17 +185,9 @@ up: devcontainer_check
 devcontainer: up
 	devcontainer exec --workspace-folder . /bin/bash
 
-.PHONY: status
-status:
-	docker compose -f "$(DEVCONTAINER_COMPOSE)" ps --all
-
 .PHONY: stop
 stop:
 	docker compose -f "$(DEVCONTAINER_COMPOSE)" stop
-
-.PHONY: restart
-restart: stop
-	docker compose -f "$(DEVCONTAINER_COMPOSE)" start --wait
 
 .PHONY: down
 down:
@@ -206,14 +195,10 @@ down:
 
 .PHONY: rebuild
 rebuild: devcontainer_check down
-	devcontainer up --workspace-folder .
-
-.PHONY: rebuild_no_cache
-rebuild_no_cache: devcontainer_check down
 	devcontainer up --workspace-folder . --build-no-cache
 
-.PHONY: data_reset
-data_reset:
+.PHONY: prune
+prune:
 	docker compose -f "$(DEVCONTAINER_COMPOSE)" down --remove-orphans --volumes
 
 ./vendor/autoload.php: ./composer.json ./composer.lock
