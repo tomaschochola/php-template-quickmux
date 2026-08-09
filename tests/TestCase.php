@@ -24,10 +24,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Random\Randomizer;
-use Src\Integration\ContainerManifest;
-use Src\Integration\MigrationManifest;
 use TomasChochola\Migrations\MigratorInterface;
 use TomasChochola\Psr\Container\Container;
+use TomasChochola\Template\Quickmux\Integration\ContainerManifest;
+use TomasChochola\Template\Quickmux\Integration\MigrationManifest;
 
 use function assert;
 use function implode;

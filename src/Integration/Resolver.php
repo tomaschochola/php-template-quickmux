@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace Src\Integration;
+namespace TomasChochola\Template\Quickmux\Integration;
 
 use LogicException;
 use NoDiscard;
@@ -28,14 +28,14 @@ use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
+use TomasChochola\Database\Mysql\Contract\QueryInterface;
+use TomasChochola\Database\Mysql\MysqlFactory;
+use TomasChochola\Database\Mysql\MysqlQuery;
+use TomasChochola\Database\Mysql\MysqlSettingsFactory;
 use TomasChochola\Migrations\MigrationsInterface;
 use TomasChochola\Migrations\Migrator;
 use TomasChochola\Migrations\MigratorInterface;
 use TomasChochola\Migrations\Mysql\MysqlMigrations;
-use TomasChochola\Pdo\Mysql\MysqlFactory;
-use TomasChochola\Pdo\Mysql\MysqlQuery;
-use TomasChochola\Pdo\Mysql\MysqlSettingsFactory;
-use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Clock\NowClock;
 use TomasChochola\Psr\Http\Factory\CgiServerRequestFactory;
 use TomasChochola\Psr\Http\Factory\ResponseFactory;

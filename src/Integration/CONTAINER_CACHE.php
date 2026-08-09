@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace Src\Integration;
+namespace TomasChochola\Template\Quickmux\Integration;
 
 use function apcu_enabled;
 use function opcache_is_script_cached;

@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace Src\Integration;
+namespace TomasChochola\Template\Quickmux\Integration;
 
 use GlobIterator;
 use IteratorAggregate;
@@ -28,12 +28,12 @@ use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
+use TomasChochola\Database\Mysql\Contract\QueryInterface;
 use TomasChochola\Loaders\EnvLoader;
 use TomasChochola\Loaders\IniLoader;
 use TomasChochola\Loaders\PhpLoader;
 use TomasChochola\Migrations\MigrationsInterface;
 use TomasChochola\Migrations\MigratorInterface;
-use TomasChochola\Pdo\QueryInterface;
 use TomasChochola\Psr\Clock\FixedClock;
 use TomasChochola\Psr\Container\SingletonResolver;
 use TomasChochola\Psr\Http\RequestHandlers\NotFoundRequestHandler;

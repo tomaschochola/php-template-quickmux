@@ -21,12 +21,12 @@ require_once \dirname(__DIR__) . '/vendor/autoload.php';
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Src\Integration\CONTAINER_CACHE;
-use Src\Integration\ContainerManifest;
 use TomasChochola\Psr\Container\Container;
 use TomasChochola\Psr\Http\RequestHandlers\ResponseEmitterInterface;
 use TomasChochola\Psr\SimpleCache\ApcuSimpleCache;
 use TomasChochola\Psr\SimpleCache\SimpleCaches;
+use TomasChochola\Template\Quickmux\Integration\CONTAINER_CACHE;
+use TomasChochola\Template\Quickmux\Integration\ContainerManifest;
 
 $container = new Container(CONTAINER_CACHE::current() ? SimpleCaches::remember(new ApcuSimpleCache(), __FILE__, static fn(): array => \iterator_to_array(new ContainerManifest())) : \iterator_to_array(new ContainerManifest()));
 

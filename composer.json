@@ -9,7 +9,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Src\\": "src/"
+      "TomasChochola\\Template\\Quickmux\\": "src/"
     }
   },
   "autoload-dev": {

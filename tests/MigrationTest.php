@@ -18,7 +18,7 @@ namespace Tests;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Medium;
 use PHPUnit\Framework\Attributes\Test;
-use TomasChochola\Pdo\QueryInterface;
+use TomasChochola\Database\Mysql\Contract\QueryInterface;
 
 /**
  * @internal

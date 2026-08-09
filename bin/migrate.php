@@ -19,10 +19,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Src\Integration\ContainerManifest;
-use Src\Integration\MigrationManifest;
 use TomasChochola\Migrations\MigratorInterface;
 use TomasChochola\Psr\Container\Container;
+use TomasChochola\Template\Quickmux\Integration\ContainerManifest;
+use TomasChochola\Template\Quickmux\Integration\MigrationManifest;
 
 $container = new Container(\iterator_to_array(new ContainerManifest()));
 
