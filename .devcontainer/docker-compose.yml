@@ -1,116 +1,116 @@
 name: 'template-php-quickmux-devcontainer'
 
 networks:
-  devcontainer:
-    internal: false
-  mysql:
-    internal: true
-  valkey:
-    internal: true
+    devcontainer:
+        internal: false
+    mysql:
+        internal: true
+    valkey:
+        internal: true
 
 secrets:
-  db_password:
-    file: './mysql_password'
-  db_root_password:
-    file: './mysql_password'
+    db_password:
+        file: './mysql_password'
+    db_root_password:
+        file: './mysql_password'
 
 services:
-  devcontainer:
-    build:
-      context: './'
-      dockerfile: 'Dockerfile'
-    command:
-      - 'sleep'
-      - 'infinity'
-    depends_on:
-      mysql:
-        condition: 'service_healthy'
-      valkey:
-        condition: 'service_healthy'
-    environment:
-      APP_ENV: 'local'
-      MYSQL_DATABASE: 'db'
-      MYSQL_HOST: 'mysql'
-      MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
-      MYSQL_ROOT_PASSWORD_FILE: '/run/secrets/db_root_password'
-      MYSQL_USER: 'db'
-      NODE_ENV: 'development'
-    init: true
-    logging:
-      driver: 'json-file'
-      options:
-        max-file: '3'
-        max-size: '10m'
-    networks:
-      - 'devcontainer'
-      - 'mysql'
-      - 'valkey'
-    ports:
-      - '61060:61060'
-      - '127.0.0.1:61061-61062:61061-61062'
-      - '61063:61063'
-      - '127.0.0.1:61064-61069:61064-61069'
-    secrets:
-      - 'db_password'
-      - 'db_root_password'
-    volumes:
-      - bind:
-          create_host_path: false
-        source: '..'
-        target: '/workspace'
-        type: 'bind'
-    working_dir: '/workspace'
+    devcontainer:
+        build:
+            context: './'
+            dockerfile: 'Dockerfile'
+        command:
+            - 'sleep'
+            - 'infinity'
+        depends_on:
+            mysql:
+                condition: 'service_healthy'
+            valkey:
+                condition: 'service_healthy'
+        environment:
+            APP_ENV: 'local'
+            MYSQL_DATABASE: 'db'
+            MYSQL_HOST: 'mysql'
+            MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
+            MYSQL_ROOT_PASSWORD_FILE: '/run/secrets/db_root_password'
+            MYSQL_USER: 'db'
+            NODE_ENV: 'development'
+        init: true
+        logging:
+            driver: 'json-file'
+            options:
+                max-file: '3'
+                max-size: '10m'
+        networks:
+            - 'devcontainer'
+            - 'mysql'
+            - 'valkey'
+        ports:
+            - '61060:61060'
+            - '127.0.0.1:61061-61062:61061-61062'
+            - '61063:61063'
+            - '127.0.0.1:61064-61069:61064-61069'
+        secrets:
+            - 'db_password'
+            - 'db_root_password'
+        volumes:
+            - bind:
+                  create_host_path: false
+              source: '..'
+              target: '/workspace'
+              type: 'bind'
+        working_dir: '/workspace'
 
-  mysql:
-    environment:
-      MYSQL_DATABASE: 'db'
-      MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
-      MYSQL_ROOT_PASSWORD_FILE: '/run/secrets/db_root_password'
-      MYSQL_USER: 'db'
-    healthcheck:
-      interval: '10s'
-      retries: 3
-      start_period: '30s'
-      test: ['CMD', 'mysqladmin', 'ping', '--host=127.0.0.1', '--silent']
-      timeout: '5s'
-    image: 'docker.io/library/mysql:8.4.10@sha256:8dbcf531a03aade657e181b9cf2f1d1803ce621a1d55610cb44cb531ab7d7db6'
-    logging:
-      driver: 'json-file'
-      options:
-        max-file: '3'
-        max-size: '10m'
-    networks:
-      - 'mysql'
-    secrets:
-      - 'db_password'
-      - 'db_root_password'
-    stop_grace_period: '60s'
-    volumes:
-      - source: 'mysql_data'
-        target: '/var/lib/mysql'
-        type: 'volume'
+    mysql:
+        environment:
+            MYSQL_DATABASE: 'db'
+            MYSQL_PASSWORD_FILE: '/run/secrets/db_password'
+            MYSQL_ROOT_PASSWORD_FILE: '/run/secrets/db_root_password'
+            MYSQL_USER: 'db'
+        healthcheck:
+            interval: '10s'
+            retries: 3
+            start_period: '30s'
+            test: ['CMD', 'mysqladmin', 'ping', '--host=127.0.0.1', '--silent']
+            timeout: '5s'
+        image: 'docker.io/library/mysql:8.4.10@sha256:8dbcf531a03aade657e181b9cf2f1d1803ce621a1d55610cb44cb531ab7d7db6'
+        logging:
+            driver: 'json-file'
+            options:
+                max-file: '3'
+                max-size: '10m'
+        networks:
+            - 'mysql'
+        secrets:
+            - 'db_password'
+            - 'db_root_password'
+        stop_grace_period: '60s'
+        volumes:
+            - source: 'mysql_data'
+              target: '/var/lib/mysql'
+              type: 'volume'
 
-  valkey:
-    healthcheck:
-      interval: '10s'
-      retries: 3
-      start_period: '10s'
-      test: ['CMD', 'valkey-cli', 'ping']
-      timeout: '5s'
-    image: 'docker.io/valkey/valkey:9.1.1-trixie@sha256:3acc0687f2a2e1091fae6450d7842dd658c941338cf0a873ddd9e14b9e4ea4dd'
-    logging:
-      driver: 'json-file'
-      options:
-        max-file: '3'
-        max-size: '10m'
-    networks:
-      - 'valkey'
-    stop_grace_period: '30s'
-    volumes:
-      - source: 'valkey_data'
-        target: '/data'
-        type: 'volume'
+    valkey:
+        healthcheck:
+            interval: '10s'
+            retries: 3
+            start_period: '10s'
+            test: ['CMD', 'valkey-cli', 'ping']
+            timeout: '5s'
+        image: 'docker.io/valkey/valkey:9.1.1-trixie@sha256:3acc0687f2a2e1091fae6450d7842dd658c941338cf0a873ddd9e14b9e4ea4dd'
+        logging:
+            driver: 'json-file'
+            options:
+                max-file: '3'
+                max-size: '10m'
+        networks:
+            - 'valkey'
+        stop_grace_period: '30s'
+        volumes:
+            - source: 'valkey_data'
+              target: '/data'
+              type: 'volume'
 
 volumes:
-  mysql_data:
-  valkey_data:
+    mysql_data:
+    valkey_data:

@@ -1,21 +1,21 @@
 {
-  "customizations": {
-    "vscode": {
-      "extensions": ["EditorConfig.EditorConfig", "DEVSENSE.phptools-vscode"],
-      "settings": {
-        "files.insertFinalNewline": true,
-        "files.trimFinalNewlines": true,
-        "files.trimTrailingWhitespace": true
-      }
-    }
-  },
-  "dockerComposeFile": "docker-compose.yml",
-  "overrideCommand": false,
-  "postCreateCommand": ["make", "postcreate"],
-  "remoteUser": "devcontainer",
-  "service": "devcontainer",
-  "shutdownAction": "stopCompose",
-  "updateRemoteUserUID": true,
-  "waitFor": "postCreateCommand",
-  "workspaceFolder": "/workspace"
+    "customizations": {
+        "vscode": {
+            "extensions": ["EditorConfig.EditorConfig", "DEVSENSE.phptools-vscode"],
+            "settings": {
+                "files.insertFinalNewline": true,
+                "files.trimFinalNewlines": true,
+                "files.trimTrailingWhitespace": true
+            }
+        }
+    },
+    "dockerComposeFile": "docker-compose.yml",
+    "overrideCommand": false,
+    "postCreateCommand": ["make", "postcreate"],
+    "remoteUser": "devcontainer",
+    "service": "devcontainer",
+    "shutdownAction": "stopCompose",
+    "updateRemoteUserUID": true,
+    "waitFor": "postCreateCommand",
+    "workspaceFolder": "/workspace"
 }
