@@ -16,6 +16,7 @@
     "service": "devcontainer",
     "shutdownAction": "stopCompose",
     "updateRemoteUserUID": true,
+    "userEnvProbe": "none",
     "waitFor": "postCreateCommand",
     "workspaceFolder": "/workspace"
 }
