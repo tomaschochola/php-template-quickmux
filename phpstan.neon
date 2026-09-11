@@ -1,11 +1,11 @@
 includes:
-  - ./vendor/tomaschochola/tooling-phpstan/src/php_85_project.neon
+    - ./vendor/tomaschochola/tooling-phpstan/src/php_85_project.neon
 
 parameters:
-  paths:
-    - ./.php-cs-fixer.php
-    - ./bin
-    - ./public
-    - ./src
-    - ./tests
-  tmpDir: ./.phpstan.cache
+    paths:
+        - ./.php-cs-fixer.php
+        - ./bin
+        - ./public
+        - ./src
+        - ./tests
+    tmpDir: ./.phpstan.cache
