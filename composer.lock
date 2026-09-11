@@ -487,12 +487,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-database-mysql.git",
-                "reference": "e78e0a03d17d1478af3a38c55c2fed72b543f0d8"
+                "reference": "d28b606515c971180be347b79be125c0f83b58ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-database-mysql/zipball/e78e0a03d17d1478af3a38c55c2fed72b543f0d8",
-                "reference": "e78e0a03d17d1478af3a38c55c2fed72b543f0d8",
+                "url": "https://api.github.com/repos/tomaschochola/php-database-mysql/zipball/d28b606515c971180be347b79be125c0f83b58ac",
+                "reference": "d28b606515c971180be347b79be125c0f83b58ac",
                 "shasum": ""
             },
             "require": {
@@ -557,7 +557,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T13:50:03+00:00"
+            "time": "2026-09-11T14:42:17+00:00"
         },
         {
             "name": "tomaschochola/php-loaders",
@@ -565,12 +565,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-loaders.git",
-                "reference": "44dea6a0222bcaaea25a493c6a4518a350cff7d7"
+                "reference": "2667c97203f6766b03ccad21d1127af2f4f2f905"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-loaders/zipball/44dea6a0222bcaaea25a493c6a4518a350cff7d7",
-                "reference": "44dea6a0222bcaaea25a493c6a4518a350cff7d7",
+                "url": "https://api.github.com/repos/tomaschochola/php-loaders/zipball/2667c97203f6766b03ccad21d1127af2f4f2f905",
+                "reference": "2667c97203f6766b03ccad21d1127af2f4f2f905",
                 "shasum": ""
             },
             "require": {
@@ -632,7 +632,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T13:52:15+00:00"
+            "time": "2026-09-11T14:44:10+00:00"
         },
         {
             "name": "tomaschochola/php-migrations",
@@ -640,12 +640,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-migrations.git",
-                "reference": "77c42c55207c849be0802fb6303b59c0b8dcd579"
+                "reference": "566ae5b0eff3e177ad4690649255b118ee3f962d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-migrations/zipball/77c42c55207c849be0802fb6303b59c0b8dcd579",
-                "reference": "77c42c55207c849be0802fb6303b59c0b8dcd579",
+                "url": "https://api.github.com/repos/tomaschochola/php-migrations/zipball/566ae5b0eff3e177ad4690649255b118ee3f962d",
+                "reference": "566ae5b0eff3e177ad4690649255b118ee3f962d",
                 "shasum": ""
             },
             "require": {
@@ -708,7 +708,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T13:53:22+00:00"
+            "time": "2026-09-11T14:45:04+00:00"
         },
         {
             "name": "tomaschochola/php-migrations-mysql",
@@ -716,12 +716,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-migrations-mysql.git",
-                "reference": "ae6f8ecd6a5de07e05c773bdf49457565887ccee"
+                "reference": "f395c096fdbe2d91db41324e084ae0c902bdbd52"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-migrations-mysql/zipball/ae6f8ecd6a5de07e05c773bdf49457565887ccee",
-                "reference": "ae6f8ecd6a5de07e05c773bdf49457565887ccee",
+                "url": "https://api.github.com/repos/tomaschochola/php-migrations-mysql/zipball/f395c096fdbe2d91db41324e084ae0c902bdbd52",
+                "reference": "f395c096fdbe2d91db41324e084ae0c902bdbd52",
                 "shasum": ""
             },
             "require": {
@@ -786,7 +786,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T13:54:48+00:00"
+            "time": "2026-09-11T14:46:14+00:00"
         },
         {
             "name": "tomaschochola/php-psr-11-container",
@@ -794,12 +794,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-psr-11-container.git",
-                "reference": "8b0501dd8b331ee82600c69662fdbad62ad103a7"
+                "reference": "4d89c80c2d766159e5772cfa4b4158ea04c048ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-psr-11-container/zipball/8b0501dd8b331ee82600c69662fdbad62ad103a7",
-                "reference": "8b0501dd8b331ee82600c69662fdbad62ad103a7",
+                "url": "https://api.github.com/repos/tomaschochola/php-psr-11-container/zipball/4d89c80c2d766159e5772cfa4b4158ea04c048ea",
+                "reference": "4d89c80c2d766159e5772cfa4b4158ea04c048ea",
                 "shasum": ""
             },
             "require": {
@@ -865,7 +865,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T13:57:14+00:00"
+            "time": "2026-09-11T14:48:13+00:00"
         },
         {
             "name": "tomaschochola/php-psr-15-request-handlers",
@@ -873,12 +873,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-psr-15-request-handlers.git",
-                "reference": "ee3fdf4f9ac1810133a4d388d0e123148732c798"
+                "reference": "ec35aa5d2ad50d9581d5b9229421d6069daf5343"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-psr-15-request-handlers/zipball/ee3fdf4f9ac1810133a4d388d0e123148732c798",
-                "reference": "ee3fdf4f9ac1810133a4d388d0e123148732c798",
+                "url": "https://api.github.com/repos/tomaschochola/php-psr-15-request-handlers/zipball/ec35aa5d2ad50d9581d5b9229421d6069daf5343",
+                "reference": "ec35aa5d2ad50d9581d5b9229421d6069daf5343",
                 "shasum": ""
             },
             "require": {
@@ -952,7 +952,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T13:58:19+00:00"
+            "time": "2026-09-11T14:49:10+00:00"
         },
         {
             "name": "tomaschochola/php-psr-16-simple-cache",
@@ -960,12 +960,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-psr-16-simple-cache.git",
-                "reference": "c9173233c6915c042046a162cfe863dd1ca3a092"
+                "reference": "88b0002e5c24c8fe3b17ef7542569ece39af6015"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-psr-16-simple-cache/zipball/c9173233c6915c042046a162cfe863dd1ca3a092",
-                "reference": "c9173233c6915c042046a162cfe863dd1ca3a092",
+                "url": "https://api.github.com/repos/tomaschochola/php-psr-16-simple-cache/zipball/88b0002e5c24c8fe3b17ef7542569ece39af6015",
+                "reference": "88b0002e5c24c8fe3b17ef7542569ece39af6015",
                 "shasum": ""
             },
             "require": {
@@ -1030,7 +1030,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T13:59:27+00:00"
+            "time": "2026-09-11T14:50:07+00:00"
         },
         {
             "name": "tomaschochola/php-psr-16-simple-cache-apcu",
@@ -1038,12 +1038,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-psr-16-simple-cache-apcu.git",
-                "reference": "be752cce5817ce57f7776c60f809f0e0903a8d7d"
+                "reference": "5a0f25e64aee483ba2ceb6a8bff654e9b1247348"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-psr-16-simple-cache-apcu/zipball/be752cce5817ce57f7776c60f809f0e0903a8d7d",
-                "reference": "be752cce5817ce57f7776c60f809f0e0903a8d7d",
+                "url": "https://api.github.com/repos/tomaschochola/php-psr-16-simple-cache-apcu/zipball/5a0f25e64aee483ba2ceb6a8bff654e9b1247348",
+                "reference": "5a0f25e64aee483ba2ceb6a8bff654e9b1247348",
                 "shasum": ""
             },
             "require": {
@@ -1111,7 +1111,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T14:00:40+00:00"
+            "time": "2026-09-11T14:51:08+00:00"
         },
         {
             "name": "tomaschochola/php-psr-17-http-factory",
@@ -1119,12 +1119,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-psr-17-http-factory.git",
-                "reference": "f52b4a9c84ba0307d8a5c9ceb4d3e7fd5463e2ad"
+                "reference": "ecdff2a7791c03cf202f7d7773dfa639351c935f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-psr-17-http-factory/zipball/f52b4a9c84ba0307d8a5c9ceb4d3e7fd5463e2ad",
-                "reference": "f52b4a9c84ba0307d8a5c9ceb4d3e7fd5463e2ad",
+                "url": "https://api.github.com/repos/tomaschochola/php-psr-17-http-factory/zipball/ecdff2a7791c03cf202f7d7773dfa639351c935f",
+                "reference": "ecdff2a7791c03cf202f7d7773dfa639351c935f",
                 "shasum": ""
             },
             "require": {
@@ -1192,7 +1192,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T14:01:52+00:00"
+            "time": "2026-09-11T14:52:07+00:00"
         },
         {
             "name": "tomaschochola/php-psr-18-http-client",
@@ -1200,12 +1200,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-psr-18-http-client.git",
-                "reference": "97ccbc4b080f66818b33a043e904dedf01ab4569"
+                "reference": "816d2d4fae7f383ee49e0a182644d170109d2b82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-psr-18-http-client/zipball/97ccbc4b080f66818b33a043e904dedf01ab4569",
-                "reference": "97ccbc4b080f66818b33a043e904dedf01ab4569",
+                "url": "https://api.github.com/repos/tomaschochola/php-psr-18-http-client/zipball/816d2d4fae7f383ee49e0a182644d170109d2b82",
+                "reference": "816d2d4fae7f383ee49e0a182644d170109d2b82",
                 "shasum": ""
             },
             "require": {
@@ -1268,7 +1268,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T14:03:14+00:00"
+            "time": "2026-09-11T14:53:00+00:00"
         },
         {
             "name": "tomaschochola/php-psr-18-http-client-curl",
@@ -1276,12 +1276,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-psr-18-http-client-curl.git",
-                "reference": "d74004aadd0d190df1bc80f6641c4ad6d47c35be"
+                "reference": "4ae9297f866def1e895edaff50e50b3c19abd2d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-psr-18-http-client-curl/zipball/d74004aadd0d190df1bc80f6641c4ad6d47c35be",
-                "reference": "d74004aadd0d190df1bc80f6641c4ad6d47c35be",
+                "url": "https://api.github.com/repos/tomaschochola/php-psr-18-http-client-curl/zipball/4ae9297f866def1e895edaff50e50b3c19abd2d9",
+                "reference": "4ae9297f866def1e895edaff50e50b3c19abd2d9",
                 "shasum": ""
             },
             "require": {
@@ -1354,7 +1354,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T14:06:10+00:00"
+            "time": "2026-09-11T14:54:04+00:00"
         },
         {
             "name": "tomaschochola/php-psr-20-clock",
@@ -1362,12 +1362,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-psr-20-clock.git",
-                "reference": "12da617d245b25b25f4d39d3360b23cbfeb74369"
+                "reference": "68ef6890a6b614f8a2988388327735957157d58d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-psr-20-clock/zipball/12da617d245b25b25f4d39d3360b23cbfeb74369",
-                "reference": "12da617d245b25b25f4d39d3360b23cbfeb74369",
+                "url": "https://api.github.com/repos/tomaschochola/php-psr-20-clock/zipball/68ef6890a6b614f8a2988388327735957157d58d",
+                "reference": "68ef6890a6b614f8a2988388327735957157d58d",
                 "shasum": ""
             },
             "require": {
@@ -1432,7 +1432,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T14:07:22+00:00"
+            "time": "2026-09-11T14:55:00+00:00"
         },
         {
             "name": "tomaschochola/php-psr-3-logger",
@@ -1440,12 +1440,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-psr-3-logger.git",
-                "reference": "9906e9c3d1b610ae1e4ad9e4ed456bfdd22621db"
+                "reference": "8f479b2e2c5f1489f9247b7f3340f0863e0d9ebe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-psr-3-logger/zipball/9906e9c3d1b610ae1e4ad9e4ed456bfdd22621db",
-                "reference": "9906e9c3d1b610ae1e4ad9e4ed456bfdd22621db",
+                "url": "https://api.github.com/repos/tomaschochola/php-psr-3-logger/zipball/8f479b2e2c5f1489f9247b7f3340f0863e0d9ebe",
+                "reference": "8f479b2e2c5f1489f9247b7f3340f0863e0d9ebe",
                 "shasum": ""
             },
             "require": {
@@ -1514,7 +1514,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T14:08:21+00:00"
+            "time": "2026-09-11T14:55:59+00:00"
         },
         {
             "name": "tomaschochola/php-psr-7-http-message",
@@ -1522,12 +1522,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomaschochola/php-psr-7-http-message.git",
-                "reference": "91ece39b5c4536ed7084f656c6311baaaabbeec5"
+                "reference": "cb6bc8d8a90fa38dea9fb41043d1707c09448155"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomaschochola/php-psr-7-http-message/zipball/91ece39b5c4536ed7084f656c6311baaaabbeec5",
-                "reference": "91ece39b5c4536ed7084f656c6311baaaabbeec5",
+                "url": "https://api.github.com/repos/tomaschochola/php-psr-7-http-message/zipball/cb6bc8d8a90fa38dea9fb41043d1707c09448155",
+                "reference": "cb6bc8d8a90fa38dea9fb41043d1707c09448155",
                 "shasum": ""
             },
             "require": {
@@ -1593,7 +1593,7 @@
                     "url": "https://github.com/sponsors/tomaschochola"
                 }
             ],
-            "time": "2026-09-09T14:09:19+00:00"
+            "time": "2026-09-11T14:56:54+00:00"
         }
     ],
     "packages-dev": [
@@ -3038,16 +3038,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "14.3.2",
+            "version": "14.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "93d62632fb675b76c9b941fdcfcfa10ffb9dea75"
+                "reference": "f8640c238e930b914d0098a1edbad6652e61a64a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/93d62632fb675b76c9b941fdcfcfa10ffb9dea75",
-                "reference": "93d62632fb675b76c9b941fdcfcfa10ffb9dea75",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/f8640c238e930b914d0098a1edbad6652e61a64a",
+                "reference": "f8640c238e930b914d0098a1edbad6652e61a64a",
                 "shasum": ""
             },
             "require": {
@@ -3066,7 +3066,7 @@
                 "theseer/tokenizer": "^2.0.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^13.3.2"
+                "phpunit/phpunit": "^13.3.3"
             },
             "suggest": {
                 "ext-pcov": "PHP extension that provides line coverage",
@@ -3104,7 +3104,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
                 "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/14.3.2"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/14.3.3"
             },
             "funding": [
                 {
@@ -3124,7 +3124,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-04T03:46:43+00:00"
+            "time": "2026-09-10T13:08:32+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
